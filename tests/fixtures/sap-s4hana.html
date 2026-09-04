@@ -1145,9 +1145,14 @@
           Enter Incoming Supplier Invoice (MIRO)
           <span style="font-size: 11px; font-weight: 700; padding: 2px 7px; border-radius: 4px; background: #e0f2fe; color: #0369a1;">Tolerance Validation</span>
         </h1>
-        <button class="sap-btn sap-btn-secondary" type="button" onclick="showView('procurement')">
-          ← Back to Procurement Launchpad
-        </button>
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <button class="sap-btn sap-btn-secondary" id="btn-hdr-account-det" type="button" onclick="triggerAccountDeterminationError()">
+            ⚠️ Simulate Account Determination Error
+          </button>
+          <button class="sap-btn sap-btn-secondary" type="button" onclick="showView('procurement')">
+            ← Back to Procurement Launchpad
+          </button>
+        </div>
       </div>
 
       <!-- Dynamic Price Variance Warning Alert & Resolution Controls -->
@@ -1207,7 +1212,7 @@
           </div>
         </div>
 
-        <div style="display: flex; gap: 10px; margin-top: 20px; border-top: 1px solid var(--sap-border); padding-top: 16px;">
+        <div style="display: flex; gap: 10px; margin-top: 20px; border-top: 1px solid var(--sap-border); padding-top: 16px; flex-wrap: wrap;">
           <button
             class="sap-btn sap-btn-primary"
             id="btn-validate-inv"
@@ -1225,6 +1230,15 @@
             onclick="validateInvoice()"
           >
             Submit Invoice
+          </button>
+          <button
+            class="sap-btn sap-btn-secondary"
+            id="btn-trigger-account-det"
+            aria-label="Simulate Account Determination Error"
+            type="button"
+            onclick="triggerAccountDeterminationError()"
+          >
+            Simulate Account Determination Error
           </button>
           <button
             class="sap-btn sap-btn-secondary"
@@ -1341,6 +1355,166 @@
     </div>
   </div>
 
+  <!-- ========================================== -->
+  <!-- SAP MATERIAL VALUATION DIALOG (MM03)       -->
+  <!-- ========================================== -->
+  <div id="sap-mat-val-dialog-backdrop" class="sap-dialog-backdrop" style="display: none;" onclick="if (event.target === this) closeMaterialValuationModal();">
+    <div class="sap-dialog" role="dialog" aria-labelledby="mat-val-title" aria-modal="true">
+      <div class="sap-dialog-header">
+        <div class="sap-dialog-title" id="mat-val-title">
+          <span>📦 Material Valuation Data (MM03 / Accounting 1)</span>
+        </div>
+        <button class="sap-dialog-close" type="button" aria-label="Close Material Valuation Dialog" onclick="closeMaterialValuationModal()">✕</button>
+      </div>
+      <div class="sap-dialog-body">
+        <div class="sap-message-strip sap-message-info" style="margin-bottom: 16px; background: #eff6ff; border-left: 4px solid #0284c7; padding: 12px 14px; font-size: 12px; color: #1e40af;">
+          <div>Valuation segment parameters for Material <strong>COMP-SRV-901</strong> in Plant <strong>1000</strong>.</div>
+        </div>
+
+        <div class="sap-property-grid">
+          <div class="sap-property-item">
+            <div class="sap-property-label">Material</div>
+            <div class="sap-property-value">COMP-SRV-901 <span style="font-size: 11px; font-weight: normal; color: #64748b;">(High-Density Compute Server)</span></div>
+          </div>
+          <div class="sap-property-item">
+            <div class="sap-property-label">Plant / Valuation Area</div>
+            <div class="sap-property-value">1000 <span style="font-size: 11px; font-weight: normal; color: #64748b;">(Hamburg Distribution)</span></div>
+          </div>
+          <div class="sap-property-item">
+            <div class="sap-property-label">Valuation Class</div>
+            <div class="sap-property-value"><span class="badge-status badge-info" style="background: #e0f2fe; color: #0369a1; padding: 2px 6px; border-radius: 4px; font-weight: bold;">3000 (Finished Goods)</span></div>
+          </div>
+          <div class="sap-property-item">
+            <div class="sap-property-label">Price Control</div>
+            <div class="sap-property-value">S <span style="font-size: 11px; font-weight: normal; color: #64748b;">(Standard Price)</span></div>
+          </div>
+          <div class="sap-property-item">
+            <div class="sap-property-label">Standard Unit Price</div>
+            <div class="sap-property-value">$10,000.00 USD</div>
+          </div>
+          <div class="sap-property-item">
+            <div class="sap-property-label">Total Stock</div>
+            <div class="sap-property-value">50 EA</div>
+          </div>
+        </div>
+
+        <div style="background: #f1f5f9; padding: 12px 16px; border-radius: 6px; border-left: 4px solid #0284c7; margin-top: 14px;">
+          <strong style="color: #0f172a; font-size: 12px; display: block; margin-bottom: 4px;">Valuation Analysis:</strong>
+          <p style="margin: 0; font-size: 12px; color: #475569; line-height: 1.5;">
+            Material COMP-SRV-901 is assigned to Valuation Class <strong>3000</strong>. When posting invoice receipts (MIRO) or goods receipts (MIGO), SAP uses this valuation class combined with transaction key <strong>WRX</strong> (GR/IR clearing) to determine the offsetting G/L account.
+          </p>
+        </div>
+      </div>
+      <div class="sap-dialog-footer">
+        <button class="sap-btn sap-btn-secondary" id="btn-close-mat-val" aria-label="Close Material Valuation" type="button" onclick="closeMaterialValuationModal()">
+          Close Material Valuation
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- SAP VALUATION CLASS DIALOG (OMSK)          -->
+  <!-- ========================================== -->
+  <div id="sap-val-class-dialog-backdrop" class="sap-dialog-backdrop" style="display: none;" onclick="if (event.target === this) closeValuationClassModal();">
+    <div class="sap-dialog" role="dialog" aria-labelledby="val-class-title" aria-modal="true">
+      <div class="sap-dialog-header">
+        <div class="sap-dialog-title" id="val-class-title">
+          <span>🏷️ Valuation Class Assignment (OMSK)</span>
+        </div>
+        <button class="sap-dialog-close" type="button" aria-label="Close Valuation Class Dialog" onclick="closeValuationClassModal()">✕</button>
+      </div>
+      <div class="sap-dialog-body">
+        <div class="sap-property-grid">
+          <div class="sap-property-item">
+            <div class="sap-property-label">Valuation Class</div>
+            <div class="sap-property-value"><strong>3000</strong></div>
+          </div>
+          <div class="sap-property-item">
+            <div class="sap-property-label">Description</div>
+            <div class="sap-property-value">Finished Goods / Server Hardware</div>
+          </div>
+          <div class="sap-property-item">
+            <div class="sap-property-label">Account Category Ref</div>
+            <div class="sap-property-value">0001 (Finished Products)</div>
+          </div>
+          <div class="sap-property-item">
+            <div class="sap-property-label">Permitted Material Types</div>
+            <div class="sap-property-value">FERT (Finished Product)</div>
+          </div>
+        </div>
+
+        <div style="background: #f8fafc; padding: 12px 16px; border-radius: 6px; border: 1px dashed #cbd5e1; margin-top: 14px;">
+          <strong style="color: #0f172a; font-size: 12px; display: block; margin-bottom: 4px;">Configuration Status:</strong>
+          <p style="margin: 0; font-size: 12px; color: #475569; line-height: 1.5;">
+            Valuation Class 3000 is valid. However, automatic account determination in table T030 (transaction OBYC) has no clearing G/L account configured for transaction <strong>WRX</strong>.
+          </p>
+        </div>
+      </div>
+      <div class="sap-dialog-footer">
+        <button class="sap-btn sap-btn-secondary" id="btn-close-val-class" aria-label="Close Valuation Class" type="button" onclick="closeValuationClassModal()">
+          Close Valuation Class
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- SAP OBYC ACCOUNT DETERMINATION DIALOG      -->
+  <!-- ========================================== -->
+  <div id="sap-obyc-dialog-backdrop" class="sap-dialog-backdrop" style="display: none;" onclick="if (event.target === this) closeObycConfigurationModal();">
+    <div class="sap-dialog" role="dialog" aria-labelledby="obyc-title" aria-modal="true" style="max-width: 650px;">
+      <div class="sap-dialog-header">
+        <div class="sap-dialog-title" id="obyc-title">
+          <span>⚙️ Automatic Account Determination (OBYC - Transaction WRX)</span>
+        </div>
+        <button class="sap-dialog-close" type="button" aria-label="Close OBYC Dialog" onclick="closeObycConfigurationModal()">✕</button>
+      </div>
+      <div class="sap-dialog-body">
+        <p style="font-size: 12px; color: #475569; margin-bottom: 12px;">
+          Maintain automatic G/L account determination entries for GR/IR clearing account (Transaction <strong>WRX</strong>, Chart of Accounts <strong>INT</strong>).
+        </p>
+
+        <table class="sap-table" style="width: 100%; font-size: 12px; margin-bottom: 16px;">
+          <thead>
+            <tr>
+              <th>Chart of Accounts</th>
+              <th>Trans. Key</th>
+              <th>Val. Modifier</th>
+              <th>Val. Class</th>
+              <th>G/L Account</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>INT</td>
+              <td>WRX (GR/IR)</td>
+              <td>0001</td>
+              <td><strong>3000</strong></td>
+              <td id="obyc-gl-account-cell" style="font-weight: bold; color: #b91c1c;">
+                <span style="background: #fee2e2; padding: 2px 8px; border-radius: 4px;">[Missing - Required]</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div id="obyc-status-banner" style="background: #fffbeb; padding: 10px 14px; border-radius: 6px; border-left: 4px solid #f59e0b; font-size: 12px; color: #92400e;">
+          To allow invoice posting for valuation class 3000, assign the GR/IR Clearing G/L Account (e.g., <strong>211000</strong>).
+        </div>
+      </div>
+      <div class="sap-dialog-footer" style="display: flex; gap: 8px; justify-content: flex-end;">
+        <button class="sap-btn sap-btn-secondary" id="btn-close-obyc" aria-label="Close OBYC Configuration" type="button" onclick="closeObycConfigurationModal()">
+          Close
+        </button>
+        <button class="sap-btn sap-btn-primary" id="btn-assign-clearing-acct" aria-label="Assign Default Clearing Account" type="button" onclick="assignDefaultClearingAccount()">
+          Assign Default Clearing Account
+        </button>
+        <button class="sap-btn sap-btn-success" id="btn-save-obyc" aria-label="Save OBYC Configuration" type="button" onclick="saveObycConfiguration()">
+          Save OBYC Configuration
+        </button>
+      </div>
+    </div>
+  </div>
 
   <script>
     function showView(viewId) {
@@ -1598,6 +1772,113 @@
       if (container) container.innerHTML = "";
     }
 
+    // ==========================================
+    // DYNAMIC ACCOUNT DETERMINATION VALIDATION (OBYC)
+    // ==========================================
+    function triggerAccountDeterminationError() {
+      showView("create-invoice");
+      const container = document.getElementById("invoice-alert-container");
+      if (!container) return;
+      container.innerHTML = `
+        <div role="alert" class="sapMMessageStrip sapMMessageStripError" aria-label="Account Determination Error Alert" id="inv-account-det-alert">
+          <span class="sapMMessageStripText">
+            [ERROR]: Account determination cannot be carried out for Company Code 1000, Chart of Accounts INT, Transaction Key WRX, Valuation Class 3000.
+          </span>
+        </div>
+        <div class="sap-resolution-box" id="inv-account-det-resolution" style="margin-bottom: 18px; padding: 14px; background: #fef2f2; border: 1px dashed #ef4444; border-radius: 8px;">
+          <strong style="color: #991b1b; font-size: 12.5px; display: block; margin-bottom: 8px;">Resolution Actions Required for Account Determination:</strong>
+          <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <button
+              class="sap-btn sap-btn-secondary"
+              id="btn-check-material-val"
+              aria-label="Check Material Valuation"
+              type="button"
+              onclick="openMaterialValuationModal()"
+            >
+              Check Material Valuation
+            </button>
+            <button
+              class="sap-btn sap-btn-secondary"
+              id="btn-check-val-class"
+              aria-label="Check Valuation Class"
+              type="button"
+              onclick="openValuationClassModal()"
+            >
+              Check Valuation Class
+            </button>
+            <button
+              class="sap-btn sap-btn-primary"
+              id="btn-review-obyc"
+              aria-label="Review OBYC Configuration"
+              type="button"
+              onclick="openObycConfigurationModal()"
+            >
+              Review OBYC Configuration
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    function openMaterialValuationModal() {
+      const modal = document.getElementById("sap-mat-val-dialog-backdrop");
+      if (modal) modal.style.display = "flex";
+    }
+
+    function closeMaterialValuationModal() {
+      const modal = document.getElementById("sap-mat-val-dialog-backdrop");
+      if (modal) modal.style.display = "none";
+    }
+
+    function openValuationClassModal() {
+      const modal = document.getElementById("sap-val-class-dialog-backdrop");
+      if (modal) modal.style.display = "flex";
+    }
+
+    function closeValuationClassModal() {
+      const modal = document.getElementById("sap-val-class-dialog-backdrop");
+      if (modal) modal.style.display = "none";
+    }
+
+    function openObycConfigurationModal() {
+      const modal = document.getElementById("sap-obyc-dialog-backdrop");
+      if (modal) modal.style.display = "flex";
+    }
+
+    function closeObycConfigurationModal() {
+      const modal = document.getElementById("sap-obyc-dialog-backdrop");
+      if (modal) modal.style.display = "none";
+    }
+
+    function assignDefaultClearingAccount() {
+      const cell = document.getElementById("obyc-gl-account-cell");
+      const banner = document.getElementById("obyc-status-banner");
+      if (cell) {
+        cell.innerHTML = '<span style="background: #dcfce7; color: #166534; padding: 2px 8px; border-radius: 4px;">211000 (GR/IR Clearing Account)</span>';
+      }
+      if (banner) {
+        banner.className = "sapMMessageStrip";
+        banner.style.background = "#f0fdf4";
+        banner.style.borderLeft = "4px solid #16a34a";
+        banner.style.color = "#166534";
+        banner.innerHTML = 'G/L Account <strong>211000</strong> assigned for Transaction WRX / Valuation Class 3000. Click <strong>"Save OBYC Configuration"</strong> to persist.';
+      }
+    }
+
+    function saveObycConfiguration() {
+      closeObycConfigurationModal();
+      const container = document.getElementById("invoice-alert-container");
+      if (container) {
+        container.innerHTML = `
+          <div role="status" class="sapMMessageStrip" style="background: #f0fdf4; border: 1px solid #bbf7d0; border-left: 5px solid #16a34a; color: #166534;" aria-label="Account Determination Configured">
+            <span class="sapMMessageStripText">
+              [SUCCESS]: Account determination configured successfully in OBYC. Invoice is ready for posting.
+            </span>
+          </div>
+        `;
+      }
+    }
+
     // Programmatic test hook
     window.showScenario = function(scenarioName) {
       if (scenarioName === "missing-supplier") {
@@ -1610,6 +1891,9 @@
         const inv = document.getElementById("inv-amount");
         if (inv) inv.value = "12500";
         validateInvoice();
+      } else if (scenarioName === "account-determination") {
+        showView("create-invoice");
+        triggerAccountDeterminationError();
       }
     };
 

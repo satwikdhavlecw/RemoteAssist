@@ -74,4 +74,58 @@ describe("default governed knowledge", () => {
     expect(result.groundedGuidance.proposedNextStep).toContain("cannot be executed automatically");
     expect(result.groundedGuidance.proposedNextStep).toContain("manually");
   });
+
+  it("provides grounded reasoning and next step suggestions for account determination errors", async () => {
+    const knowledge = new GovernedKnowledgeService();
+    const observation: any = {
+      id: "obs_test_acct_det",
+      origin: "http://127.0.0.1:4320",
+      pageTitle: "SAP S/4HANA Cloud - Enter Incoming Supplier Invoice",
+      pageFingerprint: "sha256:test_acct_det",
+      application: "SAP S/4HANA",
+      screenState: "invoice_verification",
+      visibleText: [
+        "[ERROR]: Account determination cannot be carried out for Company Code 1000, Chart of Accounts INT, Transaction Key WRX, Valuation Class 3000.",
+      ],
+      controls: [
+        {
+          elementId: "btn-check-material-val",
+          role: "button",
+          name: "Check Material Valuation",
+          disabled: false,
+          rectangle: { x: 10, y: 10, width: 160, height: 32 },
+        },
+        {
+          elementId: "btn-check-val-class",
+          role: "button",
+          name: "Check Valuation Class",
+          disabled: false,
+          rectangle: { x: 180, y: 10, width: 160, height: 32 },
+        },
+        {
+          elementId: "btn-review-obyc",
+          role: "button",
+          name: "Review OBYC Configuration",
+          disabled: false,
+          rectangle: { x: 350, y: 10, width: 180, height: 32 },
+        },
+      ],
+      sensitiveContent: false,
+      confidence: 0.95,
+    };
+
+    const result = await knowledge.search(
+      {
+        session_id: "rs_test",
+        query: "Why is the invoice failing with account determination?",
+        context: { application: "SAP S/4HANA" },
+        top_k: 10,
+      },
+      observation,
+      employee,
+    );
+
+    expect(result.groundedGuidance.inferred).toContain("Missing or incorrect account determination configuration");
+    expect(result.groundedGuidance.proposedNextStep).toContain("Check material valuation, valuation class, and OBYC configuration");
+  });
 });

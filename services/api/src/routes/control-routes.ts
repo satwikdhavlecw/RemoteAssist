@@ -136,7 +136,7 @@ function isSettingsNavigationRequest(query: string): boolean {
 }
 
 function isSafeNavigationRequest(query: string): boolean {
-  return /\b(open|go\s+to|navigate(?:\s+to)?|take\s+me\s+to|bring\s+me\s+to|view|show|click(?:\s+on)?|select|access|check|inspect|unlock|release|clear|reset|request|override|focus|enter|fill)\b/i.test(
+  return /\b(open|go\s+to|navigate(?:\s+to)?|take\s+me\s+to|bring\s+me\s+to|view|show|click(?:\s+on)?|select|access|check|inspect|review|unlock|release|clear|reset|request|override|focus|enter|fill)\b/i.test(
     query,
   );
 }
@@ -842,7 +842,7 @@ function extractPlanStepsFromQuery(
       if (isSafeNavigationRequest(input.query)) {
         const cleanedTarget = input.query
           .replace(
-            /^\s*(?:how\s+do\s+i\s+)?(?:can\s+you\s+)?(?:open|go\s+to|navigate(?:\s+to)?|take\s+me\s+to|bring\s+me\s+to|view|show|click(?:\s+on)?|select|access|check|inspect|unlock|release|clear|reset|request|override|focus|enter|fill)\s+(?:an?\s+)?(?:the\s+)?/i,
+            /^\s*(?:how\s+do\s+i\s+)?(?:can\s+you\s+)?(?:open|go\s+to|navigate(?:\s+to)?|take\s+me\s+to|bring\s+me\s+to|view|show|click(?:\s+on)?|select|access|check|inspect|review|unlock|release|clear|reset|request|override|focus|enter|fill)\s+(?:an?\s+)?(?:the\s+)?/i,
             "",
           )
           .trim()

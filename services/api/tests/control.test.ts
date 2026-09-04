@@ -2001,5 +2001,67 @@ describe("governed browser control API", () => {
       expect(body.proposal).toBeNull();
       expect(body.reason).toBe("action_risk_not_low");
     });
+
+    it("proposes governed CLICK_ELEMENT action for Review OBYC Configuration", async () => {
+      const { sessionId } = await preparedSession();
+      const obsRes = await app.inject({
+        method: "POST",
+        url: `/v1/support-sessions/${sessionId}/observations`,
+        headers,
+        payload: {
+          origin: "https://login.salesforce.com",
+          page_title: "SAP S/4HANA Cloud - Enter Incoming Supplier Invoice",
+          page_fingerprint: "sha256:sap_acct_det_test",
+          application: "SAP S/4HANA",
+          screen_state: "invoice_verification",
+          visible_text: [
+            "[ERROR]: Account determination cannot be carried out for Company Code 1000, Chart of Accounts INT, Transaction Key WRX, Valuation Class 3000.",
+          ],
+          controls: [
+            {
+              elementId: "btn-check-material-val",
+              role: "button",
+              name: "Check Material Valuation",
+              disabled: false,
+              rectangle: { x: 10, y: 10, width: 160, height: 32 },
+            },
+            {
+              elementId: "btn-check-val-class",
+              role: "button",
+              name: "Check Valuation Class",
+              disabled: false,
+              rectangle: { x: 180, y: 10, width: 160, height: 32 },
+            },
+            {
+              elementId: "btn-review-obyc",
+              role: "button",
+              name: "Review OBYC Configuration",
+              disabled: false,
+              rectangle: { x: 350, y: 10, width: 180, height: 32 },
+            },
+          ],
+          sensitive_content: false,
+          confidence: 0.95,
+        },
+      });
+      expect(obsRes.statusCode).toBe(201);
+
+      const response = await app.inject({
+        method: "POST",
+        url: `/v1/support-sessions/${sessionId}/action-suggestions`,
+        headers,
+        payload: {
+          query: "Review OBYC Configuration",
+          trigger: "chat",
+        },
+      });
+
+      expect(response.statusCode).toBe(201);
+      const body = response.json();
+      expect(body.plan).not.toBeNull();
+      expect(body.plan.steps).toHaveLength(1);
+      expect(body.plan.steps[0].actionType).toBe("CLICK_ELEMENT");
+      expect(body.plan.steps[0].controlName).toBe("Review OBYC Configuration");
+    });
   });
 });
