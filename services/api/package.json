@@ -1,0 +1,21 @@
+{
+  "name": "@remoteassist/api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node build-portable.mjs",
+    "dev": "node --env-file=../../.env --import tsx --watch src/index.ts",
+    "start": "node --env-file=../../.env --import tsx src/index.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@fastify/cors": "11.3.0",
+    "@remoteassist/command-schema": "^0.1.0",
+    "@remoteassist/control-policy": "^0.1.0",
+    "@remoteassist/policy-model": "*",
+    "@remoteassist/shared-types": "*",
+    "fastify": "5.10.0",
+    "zod": "4.4.3"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "name": "@remoteassist/browser-extension",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node build-portable.mjs",
+    "dev": "node build-portable.mjs --watch",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@remoteassist/command-schema": "^0.1.0",
+    "@remoteassist/policy-model": "*",
+    "@remoteassist/shared-types": "*",
+    "react": "19.2.7",
+    "react-dom": "19.2.7"
+  }
+}

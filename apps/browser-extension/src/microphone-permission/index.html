@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light" />
+    <title>Allow RemoteAssist microphone</title>
+    <link rel="stylesheet" href="microphone-permission.css" />
+  </head>
+  <body>
+    <main class="panel-shell permission-shell">
+      <section class="card">
+        <div class="brand-row">
+          <div class="brand-mark" aria-hidden="true">RA</div>
+          <div>
+            <p class="eyebrow">OpenAI Realtime</p>
+            <h1>Allow the RemoteAssist microphone</h1>
+          </div>
+        </div>
+        <p>
+          Chrome cannot display its microphone permission prompt inside an
+          extension side panel. Use this full extension tab to grant access
+          once.
+        </p>
+        <ol>
+          <li>Select <strong>Grant microphone permission</strong>.</li>
+          <li>Choose <strong>Allow</strong> in Chrome's prompt.</li>
+          <li>Return to the RemoteAssist side panel and enable voice again.</li>
+        </ol>
+        <p id="permission-status" class="mode-notice" role="status">
+          No microphone audio is sent to OpenAI from this page.
+        </p>
+        <button id="grant-microphone" class="primary-button" type="button">
+          Grant microphone permission
+        </button>
+        <button
+          id="close-permission-tab"
+          class="secondary-button"
+          type="button"
+          hidden
+        >
+          Close this tab
+        </button>
+      </section>
+    </main>
+    <script src="microphone-permission.js"></script>
+  </body>
+</html>

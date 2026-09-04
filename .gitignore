@@ -1,0 +1,23 @@
+node_modules/
+dist/
+coverage/
+.vite/
+.turbo/
+*.tsbuildinfo
+.env
+.env.*
+!.env.example
+tmp/
+output/
+playwright-report/
+test-results/
+*.log
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+
+# Private local source specifications; never upload without separate approval.
+/Product Requirements Document.pdf
+/Knowledge Base and Troubleshooting Intelligence.pdf

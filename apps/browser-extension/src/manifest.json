@@ -1,0 +1,28 @@
+{
+  "manifest_version": 3,
+  "name": "RemoteAssist",
+  "description": "Governed voice and visual assistance for approved browser support sessions.",
+  "version": "0.1.0",
+  "minimum_chrome_version": "120",
+  "action": {
+    "default_title": "Open RemoteAssist"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "side_panel": {
+    "default_path": "sidepanel.html"
+  },
+  "permissions": ["activeTab", "sidePanel", "scripting", "storage"],
+  "optional_permissions": ["tabs"],
+  "host_permissions": [
+    "http://127.0.0.1:4310/*",
+    "http://localhost:4310/*",
+    "http://127.0.0.1:4320/*",
+    "http://localhost:4320/*"
+  ],
+  "optional_host_permissions": ["http://*/*", "https://*/*"],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'none'; base-uri 'none'"
+  }
+}

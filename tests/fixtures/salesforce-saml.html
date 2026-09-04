@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Salesforce - SAML sign-in error</title>
+    <style>
+      :root {
+        color: #172033;
+        background: #eef4f9;
+        font-family: Arial, sans-serif;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        display: grid;
+        min-height: 100vh;
+        margin: 0;
+        place-items: center;
+        background: linear-gradient(145deg, #edf6fb, #f8fbfd);
+      }
+      main {
+        width: min(440px, calc(100% - 32px));
+        padding: 34px;
+        border: 1px solid #dbe5ed;
+        border-radius: 16px;
+        background: white;
+        box-shadow: 0 18px 50px rgba(25, 63, 89, 0.12);
+      }
+      .cloud {
+        margin-bottom: 12px;
+        color: #0b73b8;
+        font-size: 18px;
+        font-weight: 800;
+      }
+      h1 {
+        margin: 0 0 8px;
+        font-size: 25px;
+      }
+      [role="alert"] {
+        padding: 12px;
+        border-left: 4px solid #c23934;
+        color: #8e1915;
+        background: #fff2f2;
+      }
+      label {
+        display: block;
+        margin: 15px 0 6px;
+        font-size: 13px;
+        font-weight: 700;
+      }
+      input {
+        width: 100%;
+        padding: 11px;
+        border: 1px solid #9faab5;
+        border-radius: 6px;
+      }
+      button {
+        width: 100%;
+        margin-top: 20px;
+        padding: 12px;
+        border: 0;
+        border-radius: 7px;
+        color: white;
+        background: #0b73b8;
+        cursor: pointer;
+        font-weight: 800;
+      }
+      small {
+        display: block;
+        margin-top: 16px;
+        color: #5d6978;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <div class="cloud">Salesforce</div>
+      <h1>We could not sign you in</h1>
+      <p role="alert">SAML authentication failed</p>
+      <p>
+        Your enterprise session may have expired. Try the sign-in request again.
+      </p>
+      <label for="username">Username</label>
+      <input
+        id="username"
+        name="username"
+        autocomplete="username"
+        value="employee@example.test"
+      />
+      <label for="password">Password</label>
+      <input
+        id="password"
+        type="password"
+        autocomplete="current-password"
+        value="fixture-secret"
+      />
+      <input type="hidden" name="saml-token" value="fixture-hidden-token" />
+      <button id="retry-login" type="button">Try Again</button>
+      <button id="external-partner-btn" type="button" style="margin-top: 10px; background: #ea580c;">External Partner Directory</button>
+      <small
+        >This controlled fixture deliberately includes sensitive fields to
+        verify they are excluded.</small
+      >
+    </main>
+    <script>
+      document.getElementById("retry-login").addEventListener("click", () => {
+        document.querySelector("main").innerHTML = `
+          <div class="cloud">Salesforce</div>
+          <h1>Salesforce home</h1>
+          <p role="status">Your enterprise session is active.</p>
+          <button type="button">Open dashboard</button>
+          <button type="button" style="margin-top: 10px; background: #0e7490;">Support Portal</button>
+        `;
+      });
+      document.getElementById("external-partner-btn")?.addEventListener("click", () => {
+        window.location.href = "http://localhost:4320/external-partner";
+      });
+    </script>
+  </body>
+</html>

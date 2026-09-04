@@ -1,0 +1,1639 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SAP S/4HANA Cloud - Procurement</title>
+  <style>
+    :root {
+      --sap-shell-bg: #1d2d3e;
+      --sap-shell-color: #ffffff;
+      --sap-bg: #f5f7fa;
+      --sap-card-bg: #ffffff;
+      --sap-border: #d9e0e8;
+      --sap-text: #1d2d3e;
+      --sap-muted: #556b82;
+      --sap-accent: #0070f2;
+      --sap-accent-hover: #0056b3;
+      --sap-accent-light: #e8f3ff;
+      --sap-warning-bg: #fffbeb;
+      --sap-warning-border: #fef3c7;
+      --sap-warning-text: #92400e;
+      --sap-danger-bg: #fef2f2;
+      --sap-danger-border: #fee2e2;
+      --sap-danger-text: #b91c1c;
+      --sap-success-bg: #f0fdf4;
+      --sap-success-border: #dcfce7;
+      --sap-success-text: #166534;
+      --sap-font: "72", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--sap-font);
+      background: var(--sap-bg);
+      color: var(--sap-text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* SAP Shell Header */
+    .sap-shell-header {
+      background: var(--sap-shell-bg);
+      color: var(--sap-shell-color);
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .sap-shell-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .sap-logo-badge {
+      background: linear-gradient(135deg, #0070f2, #004085);
+      color: #ffffff;
+      font-weight: 800;
+      font-size: 13px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      letter-spacing: 0.5px;
+    }
+    .sap-shell-product {
+      font-weight: 700;
+      font-size: 14px;
+      letter-spacing: 0.2px;
+    }
+    .sap-shell-tenant {
+      font-size: 11px;
+      color: #94a3b8;
+      border-left: 1px solid #475569;
+      padding-left: 10px;
+    }
+
+    .sap-shell-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .sap-shell-icon-btn {
+      background: none;
+      border: none;
+      color: #cbd5e1;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 15px;
+      position: relative;
+    }
+    .sap-shell-icon-btn:hover {
+      background: rgba(255,255,255,0.1);
+      color: #ffffff;
+    }
+    .sap-badge-dot {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      width: 8px;
+      height: 8px;
+      background: #ef4444;
+      border-radius: 50%;
+      border: 1px solid #1d2d3e;
+    }
+    .sap-user-avatar {
+      width: 32px;
+      height: 32px;
+      background: #0284c7;
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    /* Sub-header / Space & Page Navigation Bar */
+    .sap-space-bar {
+      background: #27384a;
+      color: #e2e8f0;
+      padding: 0 16px;
+      font-size: 12px;
+      height: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    .sap-space-title {
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Fiori Spaces & Pages Anchor Tab Bar */
+    .sap-tabs-bar {
+      background: #ffffff;
+      border-bottom: 1px solid var(--sap-border);
+      padding: 0 20px;
+      display: flex;
+      gap: 4px;
+      overflow-x: auto;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+    }
+    .sap-tab {
+      background: none;
+      border: none;
+      border-bottom: 3px solid transparent;
+      padding: 12px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--sap-muted);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.15s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .sap-tab:hover {
+      color: var(--sap-accent);
+      background: #f8fafc;
+    }
+    .sap-tab.active {
+      color: var(--sap-accent);
+      border-bottom-color: var(--sap-accent);
+    }
+    .sap-tab-badge {
+      font-size: 10px;
+      background: #e2e8f0;
+      color: #334155;
+      padding: 1px 6px;
+      border-radius: 10px;
+      font-weight: 700;
+    }
+    .sap-tab.active .sap-tab-badge {
+      background: var(--sap-accent-light);
+      color: var(--sap-accent);
+    }
+
+    /* Main Container */
+    .sap-main {
+      padding: 24px;
+      flex: 1;
+      max-width: 1280px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    /* Landmark Section Container */
+    .sapUshellPageSection {
+      margin-bottom: 28px;
+    }
+    .sap-section-header {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--sap-text);
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #e2e8f0;
+      padding-bottom: 6px;
+    }
+    .sap-section-header small {
+      font-size: 12px;
+      color: var(--sap-muted);
+      font-weight: 500;
+    }
+
+    /* Fiori Tiles Grid */
+    .sap-tiles-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 16px;
+    }
+    .sap-tile {
+      background: var(--sap-card-bg);
+      border: 1px solid var(--sap-border);
+      border-radius: 8px;
+      padding: 16px 18px;
+      cursor: pointer;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      text-align: left;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 120px;
+    }
+    .sap-tile:hover {
+      box-shadow: 0 6px 16px rgba(0, 112, 242, 0.12);
+      border-color: var(--sap-accent);
+      transform: translateY(-2px);
+    }
+    .sap-tile-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 8px;
+    }
+    .sap-tile h3 {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--sap-text);
+      line-height: 1.3;
+    }
+    .sap-tile p {
+      font-size: 12px;
+      color: var(--sap-muted);
+      line-height: 1.4;
+      flex: 1;
+    }
+    .sap-tile-footer {
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .sap-tile-counter {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 4px;
+    }
+    .counter-danger {
+      background: var(--sap-danger-bg);
+      color: var(--sap-danger-text);
+      border: 1px solid var(--sap-danger-border);
+    }
+    .counter-info {
+      background: var(--sap-accent-light);
+      color: var(--sap-accent);
+    }
+    .counter-neutral {
+      background: #f1f5f9;
+      color: #475569;
+    }
+
+    /* View Controls */
+    .sap-view-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
+    }
+    .sap-view-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--sap-text);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .sap-view-title .sap-badge-live {
+      font-size: 11px;
+      background: #dbeafe;
+      color: #1e40af;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+
+    /* Buttons */
+    .sap-btn {
+      font-family: var(--sap-font);
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s;
+    }
+    .sap-btn-primary {
+      background: var(--sap-accent);
+      color: #ffffff;
+      border: 1px solid var(--sap-accent);
+    }
+    .sap-btn-primary:hover {
+      background: var(--sap-accent-hover);
+      border-color: var(--sap-accent-hover);
+    }
+    .sap-btn-secondary {
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      color: var(--sap-text);
+    }
+    .sap-btn-secondary:hover {
+      background: #f8fafc;
+      border-color: #94a3b8;
+    }
+    .sap-btn-warning {
+      background: #f59e0b;
+      color: #ffffff;
+      border: 1px solid #d97706;
+    }
+    .sap-btn-warning:hover {
+      background: #d97706;
+    }
+    .sap-btn-success {
+      background: #16a34a;
+      color: #ffffff;
+      border: 1px solid #15803d;
+    }
+
+    /* Fiori Smart Filter Section */
+    .sap-filter-card {
+      background: #ffffff;
+      border: 1px solid var(--sap-border);
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+    }
+    .sap-filter-row {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+    .sap-search-input {
+      flex: 1;
+      padding: 9px 14px;
+      border: 1px solid #b0c0d0;
+      border-radius: 6px;
+      font-size: 13px;
+      outline: none;
+      font-family: var(--sap-font);
+      transition: all 0.15s;
+    }
+    .sap-search-input:focus {
+      border-color: var(--sap-accent);
+      box-shadow: 0 0 0 3px rgba(0,112,242,0.15);
+      background: #ffffff;
+    }
+
+    /* Message Strip / Alert Banner */
+    .sap-message-strip {
+      border-radius: 8px;
+      padding: 14px 18px;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    .sap-message-warning {
+      background: var(--sap-warning-bg);
+      border: 1px solid var(--sap-warning-border);
+      color: var(--sap-warning-text);
+    }
+    .sap-message-icon {
+      font-size: 20px;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+    .sap-message-content {
+      flex: 1;
+    }
+    .sap-message-title {
+      font-weight: 700;
+      margin-bottom: 2px;
+    }
+
+    /* Data Table */
+    .sap-table-container {
+      background: #ffffff;
+      border: 1px solid var(--sap-border);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+    }
+    .sap-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    .sap-table th {
+      background: #f8fafc;
+      text-align: left;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--sap-border);
+      color: #475569;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .sap-table td {
+      padding: 13px 16px;
+      border-bottom: 1px solid #f1f5f9;
+      vertical-align: middle;
+    }
+    .sap-table tr:hover td {
+      background: #fbfcfe;
+    }
+    .sap-table tr.highlight-locked td {
+      background: #fffdfa;
+    }
+
+    /* Status Badges */
+    .badge-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 9px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .badge-locked {
+      background: var(--sap-danger-bg);
+      color: var(--sap-danger-text);
+      border: 1px solid var(--sap-danger-border);
+    }
+    .badge-released {
+      background: var(--sap-success-bg);
+      color: var(--sap-success-text);
+      border: 1px solid var(--sap-success-border);
+    }
+    .badge-pending {
+      background: #eff6ff;
+      color: #1d4ed8;
+      border: 1px solid #dbeafe;
+    }
+
+    /* SAP Fiori Modal Dialog (SM12 Lock Details) */
+    .sap-dialog-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+    }
+    .sap-dialog {
+      background: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3);
+      width: 92%;
+      max-width: 680px;
+      max-height: 85vh;
+      display: flex;
+      flex-direction: column;
+      border: 1px solid #cbd5e1;
+      overflow: hidden;
+      animation: sapDialogFadeIn 0.18s ease-out;
+    }
+    @keyframes sapDialogFadeIn {
+      from { opacity: 0; transform: scale(0.96); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    .sap-dialog-header {
+      background: #0f1e2f;
+      color: #ffffff;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .sap-dialog-title {
+      font-size: 15px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .sap-dialog-close {
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      font-size: 18px;
+      cursor: pointer;
+      line-height: 1;
+      padding: 4px;
+      border-radius: 4px;
+    }
+    .sap-dialog-close:hover {
+      color: #ffffff;
+      background: rgba(255,255,255,0.1);
+    }
+    .sap-dialog-body {
+      padding: 20px;
+      overflow-y: auto;
+      font-size: 13px;
+      color: #334155;
+    }
+    .sap-dialog-footer {
+      padding: 12px 20px;
+      background: #f8fafc;
+      border-top: 1px solid var(--sap-border);
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+    .sap-property-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .sap-property-item {
+      background: #f8fafc;
+      padding: 9px 12px;
+      border-radius: 6px;
+      border: 1px solid #e2e8f0;
+    }
+    .sap-property-label {
+      font-size: 11px;
+      color: #64748b;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 2px;
+    }
+    .sap-property-value {
+      font-size: 13px;
+      font-weight: 600;
+      color: #0f172a;
+    }
+
+    /* SAP Fiori Message Strips (Alerts) */
+    .sapMMessageStrip {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 14px 18px;
+      border-radius: 6px;
+      margin-bottom: 18px;
+      font-size: 13px;
+      line-height: 1.45;
+      animation: sapFadeIn 0.2s ease-in-out;
+    }
+    @keyframes sapFadeIn {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .sapMMessageStripError {
+      background: var(--sap-danger-bg);
+      border: 1px solid var(--sap-danger-border);
+      border-left: 5px solid var(--sap-danger-text);
+      color: var(--sap-danger-text);
+    }
+    .sapMMessageStripWarning {
+      background: var(--sap-warning-bg);
+      border: 1px solid var(--sap-warning-border);
+      border-left: 5px solid #d97706;
+      color: var(--sap-warning-text);
+    }
+    .sapMMessageStripText {
+      font-weight: 500;
+    }
+    .sapMInputError {
+      border-color: #dc2626 !important;
+      background-color: #fff5f5 !important;
+      box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.2) !important;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- SAP Shell Header -->
+  <header class="sap-shell-header">
+    <div class="sap-shell-left">
+      <span class="sap-logo-badge">SAP</span>
+      <span class="sap-shell-product">S/4HANA Cloud Public Edition</span>
+      <span class="sap-shell-tenant">Trial Space: Z_TRIAL_PROCUREMENT</span>
+    </div>
+    <div class="sap-shell-right">
+      <button class="sap-shell-icon-btn" title="Enterprise Search" aria-label="Search">🔍</button>
+      <button class="sap-shell-icon-btn" title="Notifications (3 tasks)" aria-label="Notifications">
+        🔔<span class="sap-badge-dot"></span>
+      </button>
+      <button class="sap-shell-icon-btn" title="Help / Assistant" aria-label="Help">❓</button>
+      <div class="sap-user-avatar" title="Satwik Dhavle (Purchasing Manager)">SD</div>
+    </div>
+  </header>
+
+  <!-- Sub-Header / Space Title -->
+  <div class="sap-space-bar">
+    <div class="sap-space-title">
+      <span>📁 Space: Procurement & Sourcing</span>
+      <span style="color: #94a3b8; font-weight: normal;">/ Launchpad Page: Overview</span>
+    </div>
+    <div style="font-size: 11px; color: #94a3b8;">System: S4H_PRD_2402 • Client: 100</div>
+  </div>
+
+  <!-- Fiori Spaces & Pages Anchor Tab Bar -->
+  <nav class="sap-tabs-bar" role="tablist" aria-label="Fiori Launchpad Navigation">
+    <button role="tab" class="sap-tab active" id="tab-home" aria-label="My Home" onclick="showView('home')">
+      My Home
+    </button>
+    <button role="tab" class="sap-tab" id="tab-procurement" aria-label="Procurement" onclick="showView('procurement')">
+      Procurement <span class="sap-tab-badge">4</span>
+    </button>
+    <button role="tab" class="sap-tab" id="tab-finance" aria-label="Finance" onclick="showView('finance')">
+      Finance <span class="sap-tab-badge">3</span>
+    </button>
+    <button role="tab" class="sap-tab" id="tab-mfg" aria-label="Manufacturing and Supply Chain" onclick="showView('mfg')">
+      Manufacturing & Supply Chain
+    </button>
+    <button role="tab" class="sap-tab" id="tab-sales" aria-label="Sales" onclick="showView('sales')">
+      Sales
+    </button>
+    <button role="tab" class="sap-tab" id="tab-contracts" aria-label="Enterprise Contract Management" onclick="showView('contracts')">
+      Enterprise Contract Management
+    </button>
+  </nav>
+
+  <!-- Main Content Container -->
+  <main class="sap-main" id="main-content">
+
+    <!-- ========================================== -->
+    <!-- VIEW 0: My Home (Default Initial View) -->
+    <!-- ========================================== -->
+    <div id="view-home">
+      <div class="sap-view-header">
+        <h1 class="sap-view-title">
+          My Home
+          <span class="sap-badge-live">Tenant: SAP_S4_PROD_US01</span>
+        </h1>
+        <div style="display: flex; gap: 8px;">
+          <button class="sap-btn sap-btn-primary" type="button" onclick="showView('procurement')">Open Procurement Workspace →</button>
+        </div>
+      </div>
+
+      <section class="sapUshellPageSection" aria-label="Quick Access">
+        <div class="sap-section-header">
+          <span>Quick Access & Key Workspaces</span>
+          <small>Personalized Fiori Launchpad</small>
+        </div>
+        <div class="sap-tiles-grid">
+          <button class="sap-tile" id="tile-proc-overview" type="button" onclick="showView('procurement')">
+            <div class="sap-tile-top">
+              <h3>Procurement Overview</h3>
+              <span class="sap-tile-counter counter-danger">1 Blocked</span>
+            </div>
+            <p>Purchase orders, requisitions, vendor agreements, and goods receipt</p>
+            <div class="sap-tile-footer">
+              <span style="font-size: 11px; color: #64748b;">Workspace: Z_TRIAL</span>
+              <span style="font-weight: 700; color: var(--sap-accent);">Open →</span>
+            </div>
+          </button>
+
+          <button class="sap-tile" id="tile-finance-overview" type="button" onclick="showView('create-invoice')">
+            <div class="sap-tile-top">
+              <h3>Supplier Invoices</h3>
+              <span class="sap-tile-counter counter-neutral">Finance</span>
+            </div>
+            <p>Invoice verification, payment approvals, and general ledger matching</p>
+            <div class="sap-tile-footer">
+              <span style="font-size: 11px; color: #64748b;">Workspace: Finance</span>
+              <span style="font-weight: 700; color: var(--sap-accent);">Open →</span>
+            </div>
+          </button>
+
+          <button class="sap-tile" id="tile-my-inbox" type="button" onclick="showNotice('My Inbox loaded (3 pending approvals).')">
+            <div class="sap-tile-top">
+              <h3>My Inbox</h3>
+              <span class="sap-tile-counter counter-info">3 Pending</span>
+            </div>
+            <p>Workflow tasks, document approval requests, and notifications</p>
+            <div class="sap-tile-footer">
+              <span style="font-size: 11px; color: #64748b;">Workflow</span>
+              <span style="font-weight: 700; color: var(--sap-accent);">Open →</span>
+            </div>
+          </button>
+        </div>
+      </section>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- VIEW 1: Procurement Launchpad -->
+    <!-- ========================================== -->
+    <div id="view-procurement" style="display: none;">
+      <div class="sap-view-header">
+        <h1 class="sap-view-title">
+          Procurement Overview
+          <span class="sap-badge-live">Live Trial Mode</span>
+        </h1>
+        <div style="display: flex; gap: 8px;">
+          <button class="sap-btn sap-btn-secondary" type="button" onclick="showView('home')">← My Home</button>
+          <button class="sap-btn sap-btn-primary" type="button" onclick="showView('manage-po')">Open Purchase Orders</button>
+        </div>
+      </div>
+
+      <!-- Section 1: Purchase Requisitions and Orders -->
+      <section class="sapUshellPageSection" aria-label="Purchase Requisitions and Orders">
+        <div class="sap-section-header">
+          <span>Purchase Requisitions & Orders</span>
+          <small>4 Active tiles</small>
+        </div>
+        <div class="sap-tiles-grid">
+          <!-- Create Purchase Order Tile -->
+          <button class="sap-tile" id="tile-create-po" type="button" aria-label="Create Purchase Order" onclick="showView('create-po')">
+            <div class="sap-tile-top">
+              <h3>Create Purchase Order</h3>
+              <span class="sap-tile-counter counter-neutral">ME21N</span>
+            </div>
+            <p>Draft and submit new standard purchase orders with vendor validation</p>
+            <div class="sap-tile-footer">
+              <span style="font-size: 11px; color: #64748b;">App ID: ME21N</span>
+              <span style="font-weight: 700; color: var(--sap-accent);">Launch →</span>
+            </div>
+          </button>
+
+          <!-- Manage Purchase Orders Tile -->
+          <button class="sap-tile" id="tile-manage-po" type="button" aria-label="Manage Purchase Orders" onclick="showView('manage-po')">
+            <div class="sap-tile-top">
+              <h3>Manage Purchase Orders</h3>
+              <span class="sap-tile-counter counter-danger">1 Blocked</span>
+            </div>
+            <p>Create, inspect, unlock and approve purchase orders across company codes</p>
+            <div class="sap-tile-footer">
+              <span style="font-size: 11px; color: #64748b;">App ID: F0842A</span>
+              <span style="font-weight: 700; color: var(--sap-accent);">Launch →</span>
+            </div>
+          </button>
+
+          <!-- Process Purchase Requisitions Tile -->
+          <button class="sap-tile" id="tile-create-pr" type="button" aria-label="Process Purchase Requisitions" onclick="showNotice('Process Purchase Requisitions is available in full mode.')">
+            <div class="sap-tile-top">
+              <h3>Process Purchase Requisitions</h3>
+              <span class="sap-tile-counter counter-info">12 Pending</span>
+            </div>
+            <p>Assign sources of supply and convert approved requisitions into POs</p>
+            <div class="sap-tile-footer">
+              <span style="font-size: 11px; color: #64748b;">App ID: F1048</span>
+              <span style="font-weight: 700; color: var(--sap-accent);">Launch →</span>
+            </div>
+          </button>
+
+          <!-- Post Goods Receipt Tile -->
+          <button class="sap-tile" id="tile-post-gr" type="button" aria-label="Post Goods Receipt for Purchasing Document" onclick="showView('goods-receipt')">
+            <div class="sap-tile-top">
+              <h3>Post Goods Receipt for Purchasing Document</h3>
+              <span class="sap-tile-counter counter-neutral">MIGO</span>
+            </div>
+            <p>Register incoming material shipments and confirm quantity matching</p>
+            <div class="sap-tile-footer">
+              <span style="font-size: 11px; color: #64748b;">App ID: MIGO_GR</span>
+              <span style="font-weight: 700; color: var(--sap-accent);">Launch →</span>
+            </div>
+          </button>
+
+          <!-- Monitor PR Items Tile -->
+          <button class="sap-tile" id="tile-monitor-pr" type="button" aria-label="Monitor Purchase Requisition Items" onclick="showNotice('Monitor Purchase Requisition Items loaded.')">
+            <div class="sap-tile-top">
+              <h3>Monitor Purchase Requisition Items</h3>
+              <span class="sap-tile-counter counter-neutral">Report</span>
+            </div>
+            <p>End-to-end tracking of purchasing lines from PR to invoice clearance</p>
+            <div class="sap-tile-footer">
+              <span style="font-size: 11px; color: #64748b;">App ID: F2424</span>
+              <span style="font-weight: 700; color: var(--sap-accent);">Launch →</span>
+            </div>
+          </button>
+        </div>
+      </section>
+
+      <!-- Section 2: Invoicing and Payments -->
+      <section class="sapUshellPageSection" aria-label="Invoicing and Payments">
+        <div class="sap-section-header">
+          <span>Invoicing & Payment Verification</span>
+          <small>2 Active tiles</small>
+        </div>
+        <div class="sap-tiles-grid">
+          <!-- Create Supplier Invoice Tile -->
+          <button class="sap-tile" id="tile-create-inv" type="button" aria-label="Create Supplier Invoice" onclick="showView('create-invoice')">
+            <div class="sap-tile-top">
+              <h3>Create Supplier Invoice</h3>
+              <span class="sap-tile-counter counter-neutral">MIRO</span>
+            </div>
+            <p>Post vendor invoices with 3-way matching against PO and Goods Receipt</p>
+            <div class="sap-tile-footer">
+              <span style="font-size: 11px; color: #64748b;">App ID: F0859</span>
+              <span style="font-weight: 700; color: var(--sap-accent);">Launch →</span>
+            </div>
+          </button>
+
+          <!-- Supplier Invoices List Tile -->
+          <button class="sap-tile" id="tile-inv-list" type="button" aria-label="Supplier Invoices List" onclick="showView('create-invoice')">
+            <div class="sap-tile-top">
+              <h3>Supplier Invoices List</h3>
+              <span class="sap-tile-counter counter-danger">3 Blocked</span>
+            </div>
+            <p>Review variances, price discrepancy holds, and payment release approvals</p>
+            <div class="sap-tile-footer">
+              <span style="font-size: 11px; color: #64748b;">App ID: F1060</span>
+              <span style="font-weight: 700; color: var(--sap-accent);">Launch →</span>
+            </div>
+          </button>
+        </div>
+      </section>
+
+      <!-- Section 3: Enterprise Contract Management -->
+      <section class="sapUshellPageSection" id="section-contracts" aria-label="Enterprise Contract Management">
+        <div class="sap-section-header">
+          <span>Enterprise Contract Management</span>
+          <small>Legal agreements & procurement terms</small>
+        </div>
+        <div class="sap-tiles-grid">
+          <button class="sap-tile" id="tile-legal-tx" type="button" onclick="showNotice('Manage Legal Transactions opened.')">
+            <div class="sap-tile-top">
+              <h3>Manage Legal Transactions</h3>
+              <span class="sap-tile-counter counter-neutral">Legal</span>
+            </div>
+            <p>Master service agreements, supplier NDAs, and delivery terms</p>
+            <div class="sap-tile-footer">
+              <span style="font-size: 11px; color: #64748b;">App ID: F2654</span>
+              <span style="font-weight: 700; color: var(--sap-accent);">Launch →</span>
+            </div>
+          </button>
+
+          <button class="sap-tile" id="tile-req-contract" type="button" onclick="showNotice('Request Legal Contract workflow initiated.')">
+            <div class="sap-tile-top">
+              <h3>Request Legal Contract</h3>
+              <span class="sap-tile-counter counter-info">Workflow</span>
+            </div>
+            <p>Submit a new contract authoring request to Corporate Legal</p>
+            <div class="sap-tile-footer">
+              <span style="font-size: 11px; color: #64748b;">App ID: F2789</span>
+              <span style="font-weight: 700; color: var(--sap-accent);">Launch →</span>
+            </div>
+          </button>
+        </div>
+      </section>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- VIEW 2: Manage Purchase Orders (Core Issue) -->
+    <!-- ========================================== -->
+    <div id="view-manage-po" style="display: none;">
+      <div class="sap-view-header">
+        <h1 class="sap-view-title">
+          Manage Purchase Orders
+          <span style="font-size: 12px; font-weight: normal; color: #64748b;">Standard Fiori App F0842A</span>
+        </h1>
+        <button class="sap-btn sap-btn-secondary" type="button" onclick="showView('procurement')">
+          ← Back to Procurement Launchpad
+        </button>
+      </div>
+
+      <!-- Fiori Smart Filter Bar -->
+      <div class="sap-filter-card">
+        <div class="sap-filter-row">
+          <input
+            type="text"
+            id="search-purchase-orders-input"
+            class="sap-search-input"
+            role="textbox"
+            name="Search Purchase Orders"
+            placeholder="Search Purchase Orders (e.g. 4500068938, supplier name, item)"
+            aria-label="Search Purchase Orders"
+            oninput="handleSearch(this.value)"
+          />
+          <button class="sap-btn sap-btn-primary" id="btn-search-po" type="button" onclick="triggerSearchClick()">
+            🔍 Search
+          </button>
+          <button class="sap-btn sap-btn-secondary" type="button" onclick="resetFilters()">
+            Clear
+          </button>
+        </div>
+      </div>
+
+      <!-- Live Issue Alert Banner: PO Lock -->
+      <div class="sap-message-strip sap-message-warning" id="po-lock-alert">
+        <div class="sap-message-icon">⚠️</div>
+        <div class="sap-message-content">
+          <div class="sap-message-title">SAP Lock Conflict (Message 06 047): Document 4500068938 is currently locked</div>
+          <div>
+            Purchase Order <strong>4500068938</strong> is locked in edit mode by user <strong>B.SMITH</strong> (Terminal <code>VDXLPT-0412</code>, Session ID <code>SES-99418</code>). The record cannot be modified or approved until released.
+          </div>
+          <div style="margin-top: 8px; display: flex; gap: 8px;">
+            <button class="sap-btn sap-btn-warning" type="button" onclick="resolveLock()">
+              🔓 Simulate Lock Clearance (SM12 Release)
+            </button>
+            <button class="sap-btn sap-btn-secondary" type="button" onclick="openLockDetails()">
+              View Lock Details
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- PO Table Container -->
+      <div class="sap-table-container">
+        <table class="sap-table" aria-label="Purchase Orders List">
+          <thead>
+            <tr>
+              <th>Purchase Order</th>
+              <th>Supplier Name</th>
+              <th>Material / Description</th>
+              <th>Order Date</th>
+              <th>Net Value</th>
+              <th>Lock / Approval Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="po-table-body">
+            <!-- Row 1: The Problem Record -->
+            <tr id="po-row-4500068938" class="highlight-locked">
+              <td><strong>4500068938</strong></td>
+              <td>Acme Enterprise Supplies (US01-SUPP)</td>
+              <td>High-Density Compute Servers & PDUs</td>
+              <td>2026-08-30</td>
+              <td><strong>USD 48,250.00</strong></td>
+              <td>
+                <span class="badge-status badge-locked" id="status-badge-4500068938">
+                  🔒 Locked (B.SMITH)
+                </span>
+              </td>
+              <td>
+                <div style="display: flex; gap: 6px;">
+                  <button class="sap-btn sap-btn-secondary" style="padding: 4px 9px; font-size: 11px;" onclick="openLockDetails()">
+                    Details
+                  </button>
+                  <button class="sap-btn sap-btn-warning" id="btn-unlock-row-4500068938" style="padding: 4px 9px; font-size: 11px;" onclick="resolveLock()">
+                    Unlock
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <!-- Row 2: Standard Released PO -->
+            <tr>
+              <td><strong>4500068939</strong></td>
+              <td>Global Logistics Partner (GLP-02)</td>
+              <td>Trans-Pacific Air Freight Services</td>
+              <td>2026-09-01</td>
+              <td>USD 12,400.00</td>
+              <td>
+                <span class="badge-status badge-released">
+                  ✅ Released / Open
+                </span>
+              </td>
+              <td>
+                <button class="sap-btn sap-btn-secondary" style="padding: 4px 10px; font-size: 11px;" onclick="showNotice('PO 4500068939 is released and healthy.')">
+                  View
+                </button>
+              </td>
+            </tr>
+            <!-- Row 3: In Approval -->
+            <tr>
+              <td><strong>4500068940</strong></td>
+              <td>Synapse Semiconductor Inc (SS-88)</td>
+              <td>Custom Neural Accelerator Chips</td>
+              <td>2026-09-02</td>
+              <td>USD 185,000.00</td>
+              <td>
+                <span class="badge-status badge-pending">
+                  ⏳ Pending L2 Approval
+                </span>
+              </td>
+              <td>
+                <button class="sap-btn sap-btn-secondary" style="padding: 4px 10px; font-size: 11px;" onclick="showNotice('PO 4500068940 is awaiting executive approval.')">
+                  Approve
+                </button>
+              </td>
+            </tr>
+            <!-- Row 4: Goods Receipt Complete -->
+            <tr>
+              <td><strong>4500068941</strong></td>
+              <td>Precision Industrial Valves Ltd</td>
+              <td>Cryogenic Solenoid Control Valves</td>
+              <td>2026-08-28</td>
+              <td>USD 6,720.00</td>
+              <td>
+                <span class="badge-status badge-released">
+                  📦 Goods Receipt Done
+                </span>
+              </td>
+              <td>
+                <button class="sap-btn sap-btn-secondary" style="padding: 4px 10px; font-size: 11px;" onclick="showNotice('PO 4500068941 completed.')">
+                  History
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- VIEW: Create Purchase Order (ME21N)       -->
+    <!-- ========================================== -->
+    <div id="view-create-po" style="display: none;">
+      <div class="sap-view-header">
+        <h1 class="sap-view-title">
+          Create Standard Purchase Order (ME21N)
+          <span style="font-size: 11px; font-weight: 700; padding: 2px 7px; border-radius: 4px; background: #e0f2fe; color: #0369a1;">Draft Mode</span>
+        </h1>
+        <button class="sap-btn sap-btn-secondary" type="button" onclick="showView('procurement')">
+          ← Back to Procurement Launchpad
+        </button>
+      </div>
+
+      <!-- In-Page Dynamic Alert Container for Supplier Validation -->
+      <div id="po-alert-container"></div>
+
+      <div class="sap-filter-card" style="margin-bottom: 20px;">
+        <h3 style="font-size: 14px; font-weight: 700; margin-bottom: 14px; color: var(--sap-text);">Purchase Order Header & General Information</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-bottom: 16px;">
+          <div>
+            <label for="po-supplier" style="font-size: 12px; font-weight: 700; color: var(--sap-text); display: block; margin-bottom: 6px;">
+              Supplier ID <span style="color: #b91c1c;">*</span>
+            </label>
+            <input
+              type="text"
+              id="po-supplier"
+              class="sap-search-input"
+              role="textbox"
+              name="Supplier ID"
+              aria-label="Supplier ID"
+              placeholder="e.g. 100023"
+              style="width: 100%;"
+              oninput="this.classList.remove('sapMInputError')"
+            />
+            <span style="font-size: 11px; color: var(--sap-muted); display: block; margin-top: 3px;">Mandatory supplier vendor account number</span>
+          </div>
+
+          <div>
+            <label for="po-amount" style="font-size: 12px; font-weight: 700; color: var(--sap-text); display: block; margin-bottom: 6px;">
+              Line Item Amount (USD) <span style="color: #b91c1c;">*</span>
+            </label>
+            <input
+              type="number"
+              id="po-amount"
+              class="sap-search-input"
+              role="textbox"
+              name="Line Item Amount"
+              aria-label="Line Item Amount"
+              value="10000"
+              style="width: 100%;"
+            />
+          </div>
+
+          <div>
+            <label for="po-org" style="font-size: 12px; font-weight: 700; color: var(--sap-text); display: block; margin-bottom: 6px;">
+              Purchasing Org / Plant
+            </label>
+            <input
+              type="text"
+              id="po-org"
+              class="sap-search-input"
+              role="textbox"
+              value="1010 - Walldorf Plant 1"
+              readonly
+              style="width: 100%; background: #f8fafc;"
+            />
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 10px; margin-top: 20px; border-top: 1px solid var(--sap-border); padding-top: 16px;">
+          <button
+            class="sap-btn sap-btn-primary"
+            id="btn-save-po"
+            aria-label="Save Purchase Order"
+            type="button"
+            onclick="savePurchaseOrder()"
+          >
+            Save Purchase Order
+          </button>
+          <button
+            class="sap-btn sap-btn-secondary"
+            type="button"
+            onclick="savePurchaseOrder()"
+          >
+            Check
+          </button>
+          <button
+            class="sap-btn sap-btn-secondary"
+            type="button"
+            onclick="clearPOForm()"
+          >
+            Clear Form
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- VIEW 3: Create Supplier Invoice (MIRO)     -->
+    <!-- ========================================== -->
+    <div id="view-create-invoice" style="display: none;">
+      <div class="sap-view-header">
+        <h1 class="sap-view-title">
+          Enter Incoming Supplier Invoice (MIRO)
+          <span style="font-size: 11px; font-weight: 700; padding: 2px 7px; border-radius: 4px; background: #e0f2fe; color: #0369a1;">Tolerance Validation</span>
+        </h1>
+        <button class="sap-btn sap-btn-secondary" type="button" onclick="showView('procurement')">
+          ← Back to Procurement Launchpad
+        </button>
+      </div>
+
+      <!-- Dynamic Price Variance Warning Alert & Resolution Controls -->
+      <div id="invoice-alert-container"></div>
+
+      <div class="sap-filter-card" style="margin-bottom: 20px;">
+        <h3 style="font-size: 14px; font-weight: 700; margin-bottom: 14px; color: var(--sap-text);">Invoice Verification Header & 3-Way Matching</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-bottom: 16px;">
+          <div>
+            <label for="inv-po-ref" style="font-size: 12px; font-weight: 700; color: var(--sap-text); display: block; margin-bottom: 6px;">
+              Reference PO Number <span style="color: #b91c1c;">*</span>
+            </label>
+            <input
+              type="text"
+              id="inv-po-ref"
+              class="sap-search-input"
+              role="textbox"
+              name="Reference PO Number"
+              aria-label="Reference PO Number"
+              value="4500068938"
+              style="width: 100%;"
+            />
+          </div>
+
+          <div>
+            <label for="inv-po-amount" style="font-size: 12px; font-weight: 700; color: var(--sap-text); display: block; margin-bottom: 6px;">
+              PO Total Amount (USD)
+            </label>
+            <input
+              type="number"
+              id="inv-po-amount"
+              class="sap-search-input"
+              role="textbox"
+              name="PO Total Amount"
+              aria-label="PO Total Amount"
+              value="10000"
+              readonly
+              style="width: 100%; background: #f8fafc;"
+            />
+          </div>
+
+          <div>
+            <label for="inv-amount" style="font-size: 12px; font-weight: 700; color: var(--sap-text); display: block; margin-bottom: 6px;">
+              Invoice Total Amount (USD) <span style="color: #b91c1c;">*</span>
+            </label>
+            <input
+              type="number"
+              id="inv-amount"
+              class="sap-search-input"
+              role="textbox"
+              name="Invoice Total Amount"
+              aria-label="Invoice Total Amount"
+              value="12500"
+              style="width: 100%;"
+              oninput="this.classList.remove('sapMInputError')"
+            />
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 10px; margin-top: 20px; border-top: 1px solid var(--sap-border); padding-top: 16px;">
+          <button
+            class="sap-btn sap-btn-primary"
+            id="btn-validate-inv"
+            aria-label="Validate Invoice"
+            type="button"
+            onclick="validateInvoice()"
+          >
+            Validate Invoice
+          </button>
+          <button
+            class="sap-btn sap-btn-secondary"
+            id="btn-submit-inv"
+            aria-label="Submit Invoice"
+            type="button"
+            onclick="validateInvoice()"
+          >
+            Submit Invoice
+          </button>
+          <button
+            class="sap-btn sap-btn-secondary"
+            type="button"
+            onclick="resetInvoiceForm()"
+          >
+            Reset
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- VIEW 4: Goods Receipt (MIGO) -->
+    <!-- ========================================== -->
+    <div id="view-goods-receipt" style="display: none;">
+      <div class="sap-view-header">
+        <h1 class="sap-view-title">Post Goods Receipt for Purchasing Document</h1>
+        <button class="sap-btn sap-btn-secondary" type="button" onclick="showView('procurement')">
+          ← Back to Procurement Launchpad
+        </button>
+      </div>
+      <div class="sap-filter-card">
+        <p style="margin-bottom: 12px; color: var(--sap-muted);">Enter PO number to post line item goods receipt into inventory:</p>
+        <div class="sap-filter-row">
+          <input type="text" class="sap-search-input" value="4500068938" placeholder="Enter Purchasing Document Number" />
+          <button class="sap-btn sap-btn-primary" type="button" onclick="showNotice('Goods movement posted successfully for PO 4500068938.')">
+            Post Goods Movement
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ========================================== -->
+  <!-- SAP FIORI LOCK DETAILS DIALOG (SM12)      -->
+  <!-- ========================================== -->
+  <div id="sap-lock-dialog-backdrop" class="sap-dialog-backdrop" style="display: none;" onclick="if (event.target === this) closeLockDetails();">
+    <div class="sap-dialog" role="dialog" aria-labelledby="dialog-title" aria-modal="true">
+      <div class="sap-dialog-header">
+        <div class="sap-dialog-title" id="dialog-title">
+          <span>🔒 SAP Lock Entry Details (SM12 / E_EKKO)</span>
+        </div>
+        <button class="sap-dialog-close" type="button" aria-label="Close dialog" onclick="closeLockDetails()">✕</button>
+      </div>
+      <div class="sap-dialog-body">
+        <div class="sap-message-strip sap-message-warning" style="margin-bottom: 16px;">
+          <div class="sap-message-icon">⚠️</div>
+          <div class="sap-message-content">
+            <div class="sap-message-title">Active Enqueue Lock: Exclusive Write Mode</div>
+            <div>User <strong>B.SMITH</strong> currently holds exclusive edit control over Purchase Order <strong>4500068938</strong>. Document modifications and approvals by other users are blocked.</div>
+          </div>
+        </div>
+
+        <div class="sap-property-grid">
+          <div class="sap-property-item">
+            <div class="sap-property-label">Lock Object</div>
+            <div class="sap-property-value">E_EKKO <span style="font-size: 11px; font-weight: normal; color: #64748b;">(Purchasing Document Header)</span></div>
+          </div>
+          <div class="sap-property-item">
+            <div class="sap-property-label">Lock Argument</div>
+            <div class="sap-property-value">1004500068938 <span style="font-size: 11px; font-weight: normal; color: #64748b;">(Client 100 + PO Number)</span></div>
+          </div>
+          <div class="sap-property-item">
+            <div class="sap-property-label">Lock Mode</div>
+            <div class="sap-property-value"><span class="badge-status badge-locked">E - Exclusive / Write</span></div>
+          </div>
+          <div class="sap-property-item">
+            <div class="sap-property-label">Lock Owner (User)</div>
+            <div class="sap-property-value">B.SMITH <span style="font-size: 11px; font-weight: normal; color: #64748b;">(Brian Smith, Senior Buyer)</span></div>
+          </div>
+          <div class="sap-property-item">
+            <div class="sap-property-label">Transaction / Program</div>
+            <div class="sap-property-value">ME22N / SAPLMEPO</div>
+          </div>
+          <div class="sap-property-item">
+            <div class="sap-property-label">Terminal / Host IP</div>
+            <div class="sap-property-value">VDXLPT-0412 (10.142.18.94)</div>
+          </div>
+          <div class="sap-property-item">
+            <div class="sap-property-label">Lock Timestamp</div>
+            <div class="sap-property-value">Today at 09:14:22 EST <span style="font-size: 11px; color: #d97706;">(Active for >3 hrs)</span></div>
+          </div>
+          <div class="sap-property-item">
+            <div class="sap-property-label">Enqueue Server</div>
+            <div class="sap-property-value">sap-app01_S4I_PRD_00</div>
+          </div>
+        </div>
+
+        <div style="background: #f1f5f9; padding: 12px 16px; border-radius: 6px; border-left: 4px solid #0284c7; margin-bottom: 12px;">
+          <strong style="color: #0f172a; font-size: 12px; display: block; margin-bottom: 4px;">Root Cause Diagnosis:</strong>
+          <p style="margin: 0; font-size: 12px; color: #475569; line-height: 1.5;">
+            User Brian Smith began modifying purchase order 4500068938 in transaction ME22N earlier today. The client terminal appears to have lost network connectivity or remained open in an inactive browser tab, leaving an orphaned exclusive write lock in the SAP Enqueue table.
+          </p>
+        </div>
+
+        <div style="background: #f8fafc; padding: 12px 16px; border-radius: 6px; border: 1px dashed #cbd5e1;">
+          <strong style="color: #0f172a; font-size: 12px; display: block; margin-bottom: 4px;">Recommended Resolution Options:</strong>
+          <ol style="margin: 0; padding-left: 18px; font-size: 12px; color: #475569; line-height: 1.5;">
+            <li>Contact user Brian Smith (<code>b.smith@company.com</code>) to save and exit ME22N.</li>
+            <li>If the user session is unreachable or terminated, click <strong>"Release Lock Entry (SM12)"</strong> below to delete the lock entry and make the purchase order available for editing and approval.</li>
+          </ol>
+        </div>
+      </div>
+      <div class="sap-dialog-footer">
+        <button class="sap-btn sap-btn-secondary" type="button" onclick="closeLockDetails()">
+          Close
+        </button>
+        <button class="sap-btn sap-btn-warning" type="button" onclick="resolveLockFromDialog()">
+          🔓 Release Lock Entry (SM12)
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+  <script>
+    function showView(viewId) {
+      document.querySelectorAll(".sap-tab").forEach(t => t.classList.remove("active"));
+      
+      const tabMap = {
+        "home": "tab-home",
+        "procurement": "tab-procurement",
+        "manage-po": "tab-procurement",
+        "create-po": "tab-procurement",
+        "create-invoice": "tab-procurement",
+        "goods-receipt": "tab-procurement",
+        "finance": "tab-finance",
+        "mfg": "tab-mfg",
+        "sales": "tab-sales",
+        "contracts": "tab-contracts"
+      };
+
+      const activeTabId = tabMap[viewId] ?? "tab-home";
+      const tabEl = document.getElementById(activeTabId);
+      if (tabEl) tabEl.classList.add("active");
+
+      // Hide all view panels
+      ["view-procurement", "view-manage-po", "view-create-po", "view-create-invoice", "view-goods-receipt", "view-home"].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.style.display = "none";
+      });
+
+      // Show requested view
+      const targetView = document.getElementById(`view-${viewId}`) ?? document.getElementById("view-home");
+      if (targetView) targetView.style.display = "block";
+
+      // Update page title for clean browser observation
+      if (viewId === "manage-po") {
+        document.title = "SAP S/4HANA Cloud - Manage Purchase Orders";
+      } else if (viewId === "create-po") {
+        document.title = "SAP S/4HANA Cloud - Create Standard Purchase Order";
+      } else if (viewId === "create-invoice") {
+        document.title = "SAP S/4HANA Cloud - Enter Incoming Supplier Invoice";
+      } else if (viewId === "goods-receipt") {
+        document.title = "SAP S/4HANA Cloud - Post Goods Receipt";
+      } else if (viewId === "procurement") {
+        document.title = "SAP S/4HANA Cloud - Procurement";
+      } else {
+        document.title = "SAP S/4HANA Cloud - My Home";
+      }
+    }
+
+    function handleSearch(query) {
+      const q = query.toLowerCase().trim();
+      const rows = document.querySelectorAll("#po-table-body tr");
+      rows.forEach(row => {
+        if (!q || row.textContent.toLowerCase().includes(q)) {
+          row.style.display = "";
+        } else {
+          row.style.display = "none";
+        }
+      });
+    }
+
+    function triggerSearchClick() {
+      const input = document.getElementById("search-purchase-orders-input");
+      if (input) {
+        handleSearch(input.value);
+      }
+    }
+
+    function resetFilters() {
+      const input = document.getElementById("search-purchase-orders-input");
+      if (input) input.value = "";
+      handleSearch("");
+    }
+
+    function resolveLock() {
+      const alertBox = document.getElementById("po-lock-alert");
+      const badge = document.getElementById("status-badge-4500068938");
+      const row = document.getElementById("po-row-4500068938");
+
+      if (alertBox) {
+        alertBox.className = "sap-message-strip";
+        alertBox.style.background = "#f0fdf4";
+        alertBox.style.border = "1px solid #bbf7d0";
+        alertBox.style.color = "#166534";
+        alertBox.innerHTML = `
+          <div class="sap-message-icon">✅</div>
+          <div class="sap-message-content">
+            <div class="sap-message-title">Lock Released Successfully (SM12)</div>
+            <div>User B.SMITH edit lock on Purchase Order <strong>4500068938</strong> has been cleared. The document is now open and ready for approval.</div>
+          </div>
+        `;
+      }
+      if (badge) {
+        badge.className = "badge-status badge-released";
+        badge.textContent = "✅ Released / Unlocked";
+      }
+      if (row) {
+        row.className = "";
+      }
+      const unlockRowBtn = document.getElementById("btn-unlock-row-4500068938");
+      if (unlockRowBtn) {
+        unlockRowBtn.className = "sap-btn sap-btn-secondary";
+        unlockRowBtn.textContent = "Open PO";
+        unlockRowBtn.onclick = () => showNotice("Purchase Order 4500068938 is unlocked and open for editing or approval.");
+      }
+    }
+
+    function showNotice(msg) {
+      alert(msg);
+    }
+
+    function openLockDetails() {
+      const dialog = document.getElementById("sap-lock-dialog-backdrop");
+      if (dialog) dialog.style.display = "flex";
+    }
+
+    function closeLockDetails() {
+      const dialog = document.getElementById("sap-lock-dialog-backdrop");
+      if (dialog) dialog.style.display = "none";
+    }
+
+    function resolveLockFromDialog() {
+      closeLockDetails();
+      resolveLock();
+    }
+
+    // ==========================================
+    // DYNAMIC CLIENT-SIDE PO VALIDATION
+    // ==========================================
+    function savePurchaseOrder() {
+      const supplierInput = document.getElementById("po-supplier");
+      const alertContainer = document.getElementById("po-alert-container");
+      const supplierVal = (supplierInput?.value || "").trim();
+
+      if (!supplierVal) {
+        if (supplierInput) supplierInput.classList.add("sapMInputError");
+        if (alertContainer) {
+          alertContainer.innerHTML = `
+            <div role="alert" class="sapMMessageStrip sapMMessageStripError" aria-label="Supplier Required Alert" id="po-supplier-alert">
+              <span class="sapMMessageStripText">
+                [ERROR]: Mandatory field "Supplier ID" is missing. Please enter a valid supplier.
+              </span>
+            </div>
+          `;
+        }
+      } else {
+        if (supplierInput) supplierInput.classList.remove("sapMInputError");
+        if (alertContainer) {
+          alertContainer.innerHTML = `
+            <div role="status" class="sapMMessageStrip" style="background: #f0fdf4; border: 1px solid #bbf7d0; border-left: 5px solid #16a34a; color: #166534;" aria-label="Purchase Order Saved">
+              <span class="sapMMessageStripText">
+                [SUCCESS]: Purchase Order successfully validated and drafted for supplier ${supplierVal}.
+              </span>
+            </div>
+          `;
+        }
+      }
+    }
+
+    function clearPOForm() {
+      const supplierInput = document.getElementById("po-supplier");
+      if (supplierInput) {
+        supplierInput.value = "";
+        supplierInput.classList.remove("sapMInputError");
+      }
+      const alertContainer = document.getElementById("po-alert-container");
+      if (alertContainer) alertContainer.innerHTML = "";
+    }
+
+    // ==========================================
+    // DYNAMIC CLIENT-SIDE INVOICE TOLERANCE VALIDATION
+    // ==========================================
+    function validateInvoice() {
+      const poRef = document.getElementById("inv-po-ref")?.value || "4500068938";
+      const poAmt = parseFloat(document.getElementById("inv-po-amount")?.value || "10000");
+      const invInput = document.getElementById("inv-amount");
+      const invAmt = parseFloat(invInput?.value || "12500");
+      const container = document.getElementById("invoice-alert-container");
+
+      if (invAmt > poAmt) {
+        const diffPct = Math.round(((invAmt - poAmt) / poAmt) * 100);
+        if (invInput) invInput.classList.add("sapMInputError");
+        if (container) {
+          container.innerHTML = `
+            <div role="alert" class="sapMMessageStrip sapMMessageStripWarning" aria-label="Price Variance Alert" id="inv-variance-alert">
+              <span class="sapMMessageStripText">
+                [POLICY WARNING]: Invoice amount ($${Number(invAmt).toLocaleString()}) exceeds PO ${poRef} value ($${Number(poAmt).toLocaleString()}) by ${diffPct}%. Price variance tolerance exceeded.
+              </span>
+            </div>
+            <div class="sap-resolution-box" id="inv-resolution-box" style="margin-bottom: 18px; padding: 14px; background: #fffbeb; border: 1px dashed #f59e0b; border-radius: 8px;">
+              <strong style="color: #92400e; font-size: 12.5px; display: block; margin-bottom: 8px;">Resolution Actions Required for Blocked Invoice:</strong>
+              <div style="display: flex; gap: 10px;">
+                <button
+                  class="sap-btn sap-btn-warning"
+                  aria-label="Request Variance Manager Approval"
+                  id="btn-variance-appr"
+                  type="button"
+                  onclick="requestVarianceApproval()"
+                >
+                  Request Variance Manager Approval
+                </button>
+                <button
+                  class="sap-btn sap-btn-secondary"
+                  aria-label="View PO Line Item Details"
+                  id="btn-po-details"
+                  type="button"
+                  onclick="showView('manage-po')"
+                >
+                  View PO Line Item Details
+                </button>
+              </div>
+            </div>
+          `;
+        }
+      } else {
+        if (invInput) invInput.classList.remove("sapMInputError");
+        if (container) {
+          container.innerHTML = `
+            <div role="status" class="sapMMessageStrip" style="background: #f0fdf4; border: 1px solid #bbf7d0; border-left: 5px solid #16a34a; color: #166534;" aria-label="Invoice Validated">
+              <span class="sapMMessageStripText">
+                [SUCCESS]: Invoice amount ($${Number(invAmt).toLocaleString()}) matches PO value. Ready for posting.
+              </span>
+            </div>
+          `;
+        }
+      }
+    }
+
+    function requestVarianceApproval() {
+      const btn = document.getElementById("btn-variance-appr");
+      if (btn) {
+        btn.textContent = "Variance Approval Requested (Pending)";
+        btn.disabled = true;
+        btn.style.opacity = "0.7";
+      }
+      const container = document.getElementById("invoice-alert-container");
+      if (container) {
+        const info = document.createElement("div");
+        info.className = "sapMMessageStrip";
+        info.style.background = "#eff6ff";
+        info.style.border = "1px solid #bfdbfe";
+        info.style.borderLeft = "5px solid #2563eb";
+        info.style.color = "#1e40af";
+        info.innerHTML = `<span class="sapMMessageStripText">[ROUTED]: Variance approval workflow dispatched to Purchasing Manager Satwik Dhavle.</span>`;
+        container.appendChild(info);
+      }
+    }
+
+    function resetInvoiceForm() {
+      const invInput = document.getElementById("inv-amount");
+      if (invInput) {
+        invInput.value = "10000";
+        invInput.classList.remove("sapMInputError");
+      }
+      const container = document.getElementById("invoice-alert-container");
+      if (container) container.innerHTML = "";
+    }
+
+    // Programmatic test hook
+    window.showScenario = function(scenarioName) {
+      if (scenarioName === "missing-supplier") {
+        showView("create-po");
+        const sup = document.getElementById("po-supplier");
+        if (sup) sup.value = "";
+        savePurchaseOrder();
+      } else if (scenarioName === "price-variance") {
+        showView("create-invoice");
+        const inv = document.getElementById("inv-amount");
+        if (inv) inv.value = "12500";
+        validateInvoice();
+      }
+    };
+
+    // Initialize based on URL hash / search params
+    const hash = window.location.hash || "";
+    const params = new URLSearchParams(window.location.search);
+    const viewParam = params.get("view");
+    const scenarioParam = params.get("scenario");
+
+    if (scenarioParam) {
+      window.showScenario(scenarioParam);
+    } else if (viewParam) {
+      showView(viewParam);
+    } else if (hash.includes("Z_TRIAL_PROCUREMENT") || window.location.search.includes("procurement")) {
+      showView("procurement");
+    } else if (hash.includes("manage-po") || window.location.search.includes("manage-po")) {
+      showView("manage-po");
+    } else if (hash.includes("create-po") || window.location.search.includes("create-po")) {
+      showView("create-po");
+    } else if (hash.includes("create-invoice") || window.location.search.includes("create-invoice")) {
+      showView("create-invoice");
+    } else {
+      showView("home");
+    }
+  </script>
+</body>
+</html>
