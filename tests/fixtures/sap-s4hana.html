@@ -701,15 +701,27 @@
             </div>
           </button>
 
-          <button class="sap-tile" id="tile-finance-overview" type="button" onclick="showView('create-invoice')">
+          <button class="sap-tile" id="tile-finance-overview" type="button" onclick="showScenario('account-determination')" aria-label="Supplier Invoices MIRO">
             <div class="sap-tile-top">
               <h3>Supplier Invoices</h3>
-              <span class="sap-tile-counter counter-neutral">Finance</span>
+              <span class="sap-tile-counter counter-danger">1 Error Blocked</span>
             </div>
-            <p>Invoice verification, payment approvals, and general ledger matching</p>
+            <p>Invoice 4500068938 verification blocked: Account determination cannot be carried out.</p>
             <div class="sap-tile-footer">
               <span style="font-size: 11px; color: #64748b;">Workspace: Finance</span>
-              <span style="font-weight: 700; color: var(--sap-accent);">Open →</span>
+              <span style="font-weight: 700; color: var(--sap-accent);">Inspect →</span>
+            </div>
+          </button>
+
+          <button class="sap-tile" id="tile-home-obyc" type="button" onclick="openObycConfigurationModal()" aria-label="Automatic Account Determination OBYC">
+            <div class="sap-tile-top">
+              <h3>Automatic Account Determination (OBYC)</h3>
+              <span class="sap-tile-counter counter-danger">1 Missing</span>
+            </div>
+            <p>Review automatic G/L account assignments for GR/IR clearing and invoice verification.</p>
+            <div class="sap-tile-footer">
+              <span style="font-size: 11px; color: #64748b;">Transaction: OBYC</span>
+              <span style="font-weight: 700; color: var(--sap-accent);">Review →</span>
             </div>
           </button>
 
@@ -1272,6 +1284,81 @@
       </div>
     </div>
 
+    <!-- ========================================== -->
+    <!-- VIEW 5: Finance & General Ledger Accounting -->
+    <!-- ========================================== -->
+    <div id="view-finance" style="display: none;">
+      <div class="sap-view-header">
+        <h1 class="sap-view-title">
+          Finance & General Ledger Accounting
+          <span class="sap-badge-live">Financial Operations</span>
+        </h1>
+        <div style="display: flex; gap: 8px;">
+          <button class="sap-btn sap-btn-secondary" type="button" onclick="showView('home')">← My Home</button>
+          <button class="sap-btn sap-btn-primary" id="btn-fin-open-obyc" type="button" onclick="openObycConfigurationModal()">
+            ⚙️ Review OBYC Configuration
+          </button>
+        </div>
+      </div>
+
+      <!-- Section 1: Automatic Account Determination (OBYC) & G/L Clearing -->
+      <section class="sapUshellPageSection" aria-label="Automatic Account Assignment and Configuration">
+        <div class="sap-section-header">
+          <span>Automatic Account Assignment & G/L Clearing</span>
+          <small>Configuration & Tolerance Control</small>
+        </div>
+        <div class="sap-tiles-grid">
+          <button class="sap-tile" id="tile-fin-obyc" type="button" onclick="openObycConfigurationModal()" aria-label="Automatic Account Determination OBYC">
+            <div class="sap-tile-top">
+              <h3>Automatic Account Determination (OBYC)</h3>
+              <span class="sap-tile-counter counter-danger">1 Missing</span>
+            </div>
+            <p>Maintain automatic G/L account assignments for GR/IR clearing and invoice posting (Transaction OBYC)</p>
+            <div class="sap-tile-footer">
+              <span style="font-size: 11px; color: #64748b;">Transaction: OBYC</span>
+              <span style="font-weight: 700; color: var(--sap-accent);">Configure →</span>
+            </div>
+          </button>
+
+          <button class="sap-tile" id="tile-fin-invoices" type="button" onclick="showScenario('account-determination')" aria-label="Supplier Invoices MIRO">
+            <div class="sap-tile-top">
+              <h3>Supplier Invoices (MIRO)</h3>
+              <span class="sap-tile-counter counter-danger">1 Error Blocked</span>
+            </div>
+            <p>Enter incoming supplier invoices, inspect 3-way matching, and resolve account determination blocks</p>
+            <div class="sap-tile-footer">
+              <span style="font-size: 11px; color: #64748b;">Transaction: MIRO</span>
+              <span style="font-weight: 700; color: var(--sap-accent);">Inspect →</span>
+            </div>
+          </button>
+
+          <button class="sap-tile" id="tile-fin-mat-val" type="button" onclick="openMaterialValuationModal()" aria-label="Material Valuation and Accounting MM03">
+            <div class="sap-tile-top">
+              <h3>Material Valuation (MM03)</h3>
+              <span class="sap-tile-counter counter-neutral">Valuation</span>
+            </div>
+            <p>Display material master accounting view, valuation classes, price controls, and inventory valuation</p>
+            <div class="sap-tile-footer">
+              <span style="font-size: 11px; color: #64748b;">Transaction: MM03</span>
+              <span style="font-weight: 700; color: var(--sap-accent);">View →</span>
+            </div>
+          </button>
+
+          <button class="sap-tile" id="tile-fin-val-class" type="button" onclick="openValuationClassModal()" aria-label="Valuation Class Configuration OMSK">
+            <div class="sap-tile-top">
+              <h3>Valuation Classes (OMSK)</h3>
+              <span class="sap-tile-counter counter-neutral">Customizing</span>
+            </div>
+            <p>Maintain valuation classes, account category references, and permitted material types</p>
+            <div class="sap-tile-footer">
+              <span style="font-size: 11px; color: #64748b;">Transaction: OMSK</span>
+              <span style="font-weight: 700; color: var(--sap-accent);">Review →</span>
+            </div>
+          </button>
+        </div>
+      </section>
+    </div>
+
   </main>
 
   <!-- ========================================== -->
@@ -1538,7 +1625,7 @@
       if (tabEl) tabEl.classList.add("active");
 
       // Hide all view panels
-      ["view-procurement", "view-manage-po", "view-create-po", "view-create-invoice", "view-goods-receipt", "view-home"].forEach(id => {
+      ["view-procurement", "view-manage-po", "view-create-po", "view-create-invoice", "view-goods-receipt", "view-home", "view-finance"].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.style.display = "none";
       });
@@ -1558,6 +1645,8 @@
         document.title = "SAP S/4HANA Cloud - Post Goods Receipt";
       } else if (viewId === "procurement") {
         document.title = "SAP S/4HANA Cloud - Procurement";
+      } else if (viewId === "finance") {
+        document.title = "SAP S/4HANA Cloud - Finance";
       } else {
         document.title = "SAP S/4HANA Cloud - My Home";
       }
@@ -1915,6 +2004,8 @@
       showView("create-po");
     } else if (hash.includes("create-invoice") || window.location.search.includes("create-invoice")) {
       showView("create-invoice");
+    } else if (hash.includes("finance") || window.location.search.includes("finance")) {
+      showView("finance");
     } else {
       showView("home");
     }
