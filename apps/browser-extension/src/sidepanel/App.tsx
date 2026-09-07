@@ -81,6 +81,11 @@ const stateLabels: Record<PanelState, string> = {
 
 const legacyTabsEnabled = false;
 
+const WELCOME_MESSAGE: ConversationTurn = {
+  sender: "system",
+  text: "👋 Hi there! RemoteAssist is here to help you out. Tell me what issue you are facing or what you need to achieve, and I will guide you through it.",
+};
+
 async function extensionMessage<T>(
   message: Record<string, unknown>,
 ): Promise<RuntimeResponse<T>> {
@@ -100,7 +105,9 @@ export function App() {
   const [screenConsent, setScreenConsent] = useState<ConsentGrant | null>(null);
   const [issue, setIssue] = useState("");
   const [voiceEnabled, setVoiceEnabled] = useState(true);
-  const [chatHistory, setChatHistory] = useState<ConversationTurn[]>([]);
+  const [chatHistory, setChatHistory] = useState<ConversationTurn[]>([
+    WELCOME_MESSAGE,
+  ]);
   const [chatInput, setChatInput] = useState("");
   const chatMessagesRef = useRef<HTMLDivElement | null>(null);
   const [observation, setObservation] = useState<SanitizedObservation | null>(
@@ -199,7 +206,10 @@ export function App() {
       observedTabId.current = selectedTab.tabId;
       const created = await createSession(selectedTab.origin, voiceEnabled);
       setSession(created);
-      setChatHistory([{ sender: "user", text: issue }]);
+      setChatHistory([
+        WELCOME_MESSAGE,
+        ...(issue.trim() ? [{ sender: "user" as const, text: issue.trim() }] : []),
+      ]);
       setPanelState("awaiting_screen");
     } catch (caught) {
       setError(
@@ -684,6 +694,18 @@ export function App() {
 
       {!session && (
         <section className="card intro-card">
+          <div className="welcome-banner">
+            <span className="welcome-banner-icon" aria-hidden="true">
+              👋
+            </span>
+            <div className="welcome-banner-content">
+              <strong>Hi there! RemoteAssist is here to help you out.</strong>
+              <p>
+                Tell me what issue you are facing or what you need to achieve,
+                and I will guide you step by step.
+              </p>
+            </div>
+          </div>
           <p className="section-label">Start support</p>
           <label htmlFor="issue">What do you need help with?</label>
           <textarea
@@ -935,7 +957,7 @@ export function App() {
               setObservation(null);
               setGuidance(null);
               setActionProposal(null);
-              setChatHistory([]);
+              setChatHistory([WELCOME_MESSAGE]);
               setChatInput("");
               observedTabId.current = null;
               setPanelState("ready");

@@ -825,3 +825,36 @@ footer strong {
   width: auto;
   min-height: 42px;
 }
+
+/* Welcome Banner */
+.welcome-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 16px;
+  margin-bottom: 16px;
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.08) 0%, rgba(96, 165, 250, 0.05) 100%);
+  border: 1px solid rgba(37, 99, 235, 0.2);
+  border-radius: var(--radius-lg);
+}
+
+.welcome-banner-icon {
+  font-size: 24px;
+  line-height: 1;
+}
+
+.welcome-banner-content strong {
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--primary-dark);
+  margin-bottom: 4px;
+}
+
+.welcome-banner-content p {
+  margin: 0;
+  font-size: 12.5px;
+  color: var(--text-muted);
+  line-height: 1.45;
+}
+

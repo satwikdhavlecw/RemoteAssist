@@ -1,6 +1,6 @@
 # RemoteAssist delivery roadmap
 
-Last updated: 2026-09-04 (SAP Finance workspace and OBYC automatic account assignment tiles, Purchase Order to Invoice validation workflow, semantic alert SafeControl capture, and governed focus/scroll/click resolution)
+Last updated: 2026-09-07 (Extension startup welcome greeting and conversation initialization, SAP Finance workspace and OBYC automatic account assignment tiles, Purchase Order to Invoice validation workflow)
 
 ## How to read this roadmap
 
