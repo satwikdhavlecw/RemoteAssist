@@ -2063,5 +2063,70 @@ describe("governed browser control API", () => {
       expect(body.plan.steps[0].actionType).toBe("CLICK_ELEMENT");
       expect(body.plan.steps[0].controlName).toBe("Review OBYC Configuration");
     });
+
+    it("correctly decomposes compound multi-step query without duplicate controls or length-biased mismatch", async () => {
+      const { sessionId } = await preparedSession();
+      const obsRes = await app.inject({
+        method: "POST",
+        url: `/v1/support-sessions/${sessionId}/observations`,
+        headers,
+        payload: {
+          origin: "https://login.salesforce.com",
+          page_title: "SAP S/4HANA Cloud - My Home",
+          page_fingerprint: "fp_sap_compound_multi_step",
+          application: "SAP S/4HANA",
+          screen_state: "home",
+          visible_text: ["My Home", "Project Management", "Customer Projects"],
+          controls: [
+            {
+              elementId: "tab-project-mgmt",
+              name: "Project Management",
+              role: "tab",
+              disabled: false,
+              rectangle: { x: 100, y: 10, width: 140, height: 32 },
+            },
+            {
+              elementId: "tile-create-proj",
+              name: "Create Customer Projects Navigation Flat Wide Tile",
+              role: "listitem",
+              disabled: false,
+              rectangle: { x: 50, y: 100, width: 250, height: 120 },
+            },
+            {
+              elementId: "tile-plan-proj",
+              name: "Plan Customer Projects Navigation Flat Wide Tile",
+              role: "listitem",
+              disabled: false,
+              rectangle: { x: 320, y: 100, width: 250, height: 120 },
+            },
+          ],
+          sensitive_content: false,
+          confidence: 0.95,
+        },
+      });
+      expect(obsRes.statusCode).toBe(201);
+
+      const response = await app.inject({
+        method: "POST",
+        url: `/v1/support-sessions/${sessionId}/action-suggestions`,
+        headers,
+        payload: {
+          query: "Open project management and then open plan customer projects",
+          trigger: "chat",
+        },
+      });
+
+      expect(response.statusCode).toBe(201);
+      const body = response.json();
+      expect(body.plan).not.toBeNull();
+      expect(body.plan.steps).toHaveLength(2);
+      expect(body.plan.steps[0].controlName).toBe("Project Management");
+      expect(body.plan.steps[0].actionType).toBe("CLICK_ELEMENT");
+      expect(body.plan.steps[1].controlName).toBe(
+        "Plan Customer Projects Navigation Flat Wide Tile",
+      );
+      expect(body.plan.steps[1].actionType).toBe("CLICK_ELEMENT");
+    });
   });
 });
+

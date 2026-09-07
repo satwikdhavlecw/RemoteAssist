@@ -1,6 +1,6 @@
 # RemoteAssist delivery roadmap
 
-Last updated: 2026-09-07 (Extension startup welcome greeting and conversation initialization, SAP Finance workspace and OBYC automatic account assignment tiles, Purchase Order to Invoice validation workflow)
+Last updated: 2026-09-07 (Compound multi-step query precision scoring, action verb conflict penalty, deduplication, and destination step queueing; Extension startup welcome greeting)
 
 ## How to read this roadmap
 

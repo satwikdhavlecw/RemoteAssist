@@ -276,6 +276,8 @@ const interactiveClickableRoles = new Set([
   "checkbox",
   "option",
   "radio",
+  "listitem",
+  "tile",
 ]);
 
 export function isPotentiallyLowRiskControl(

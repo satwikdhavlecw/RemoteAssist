@@ -257,6 +257,15 @@ export function registerControlRoutes(
       .join(". ");
   }
 
+function cleanQueryTarget(query: string): string {
+  return query
+    .replace(
+      /^\s*(?:how\s+do\s+i\s+)?(?:can\s+you\s+)?(?:open|go\s+to|navigate(?:\s+to)?|take\s+me\s+to|bring\s+me\s+to|view|show|click(?:\s+on)?|select|access|check|inspect|review|unlock|release|clear|reset|request|override|focus|enter|fill)\s+(?:an?\s+)?(?:the\s+)?/i,
+      "",
+    )
+    .trim();
+}
+
 function extractPlanStepsFromQuery(
   query: string,
   observation: SanitizedObservation,
@@ -265,9 +274,10 @@ function extractPlanStepsFromQuery(
   controlName: string;
   controlRole: string;
   purpose: string;
+  grounded?: boolean;
 }> {
   const parts = query
-    .split(/\s+(?:and(?:\s+then)?|then)\s+/i)
+    .split(/\s+(?:and(?:\s+then)?|then|followed\s+by|after\s+that)\s+/i)
     .map((p) => p.trim())
     .filter((p) => p.length > 0);
 
@@ -278,33 +288,151 @@ function extractPlanStepsFromQuery(
     controlName: string;
     controlRole: string;
     purpose: string;
+    grounded?: boolean;
   }> = [];
 
-  for (const part of parts) {
-    const matches = observation.controls.filter((candidate) => {
-      const normPart = part.toLowerCase();
-      const normName = candidate.name.toLowerCase().trim();
-      return (
-        (normPart.includes(normName) || queryMentionsControl(part, candidate.name)) &&
-        (isPotentiallyLowRiskAction("CLICK_ELEMENT", candidate) ||
-          isPotentiallyLowRiskAction("SCROLL_TO_ELEMENT", candidate))
-      );
-    });
+  const alreadyChosenNames = new Set<string>();
 
-    if (matches.length > 0) {
-      const sorted = [...matches].sort((a, b) => b.name.length - a.name.length);
-      const chosen = sorted[0]!;
-      const isScroll =
-        chosen.role.toLowerCase() === "heading" ||
-        chosen.role.toLowerCase() === "region" ||
-        /\b(?:scroll|view|show)\b/i.test(part);
-      const actionType = isScroll ? ("SCROLL_TO_ELEMENT" as const) : ("CLICK_ELEMENT" as const);
+  const distinctActionWords = [
+    "create",
+    "plan",
+    "manage",
+    "display",
+    "change",
+    "delete",
+    "post",
+    "review",
+  ];
+
+  for (const part of parts) {
+    const rawTarget = cleanQueryTarget(part);
+    const target = rawTarget.toLowerCase();
+    if (!target) continue;
+
+    const isScroll =
+      /\b(?:scroll|view|show)\b/i.test(part) &&
+      !/\b(?:open|click|go\s+to)\b/i.test(part);
+
+    const scored = observation.controls
+      .map((candidate) => {
+        const normName = candidate.name.toLowerCase().trim();
+        if (alreadyChosenNames.has(normName)) return null;
+
+        const role = candidate.role.toLowerCase();
+        const actionType: GovernedBrowserAction =
+          isScroll || ["heading", "region"].includes(role)
+            ? "SCROLL_TO_ELEMENT"
+            : "CLICK_ELEMENT";
+
+        if (!isPotentiallyLowRiskAction(actionType, candidate)) {
+          return null;
+        }
+
+        let score = 0;
+        if (normName === target) {
+          score = 1000;
+        } else if (normName.startsWith(target)) {
+          score = 800 - Math.min(200, (normName.length - target.length) * 2);
+        } else if (target.startsWith(normName)) {
+          score = 750 - Math.min(200, (target.length - normName.length) * 2);
+        } else {
+          const escaped = target.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+          if (new RegExp(`\\b${escaped}\\b`, "i").test(normName)) {
+            score = 650 - Math.min(200, Math.abs(normName.length - target.length));
+          } else if (normName.includes(target)) {
+            score = 550 - Math.min(200, normName.length - target.length);
+          } else if (target.includes(normName)) {
+            score = 500 - Math.min(200, target.length - normName.length);
+          } else {
+            const stopWords = new Set([
+              "how", "can", "you", "the", "for", "this", "that", "and", "with", "please", "help",
+              "open", "click", "tile", "flat", "wide", "navigation", "bar", "button", "link",
+            ]);
+            const qWords = target.split(/\s+/).filter((w) => w.length >= 3 && !stopWords.has(w));
+            const cWords = normName.split(/\s+/).filter((w) => w.length >= 3 && !stopWords.has(w));
+            if (qWords.length > 0 && cWords.length > 0) {
+              let matchedCount = 0;
+              for (const qw of qWords) {
+                const match = cWords.some((cw) => {
+                  if (cw === qw) return true;
+                  if (cw.length >= 4 && qw.length >= 4) {
+                    if (cw.startsWith(qw) || qw.startsWith(cw)) return true;
+                    return getEditDistance(cw, qw) <= 1;
+                  }
+                  return false;
+                });
+                if (match) matchedCount++;
+              }
+              const matchRatio = matchedCount / qWords.length;
+              if (matchRatio >= 0.5) {
+                const extraWords = Math.max(0, cWords.length - matchedCount);
+                score = Math.round(matchRatio * 300) - (extraWords * 10);
+              }
+            }
+          }
+        }
+
+        // Distinctive action verb mismatch penalty
+        // e.g. If target has "plan" and candidate has "create", heavily penalize
+        for (const actionWord of distinctActionWords) {
+          if (target.includes(actionWord) && !normName.includes(actionWord)) {
+            const hasConflict = distinctActionWords.some(
+              (other) => other !== actionWord && normName.includes(other),
+            );
+            if (hasConflict) {
+              score -= 300;
+            }
+          }
+        }
+
+        if (score > 0) {
+          if (
+            actionType === "CLICK_ELEMENT" &&
+            ["tab", "button", "link", "listitem"].includes(role)
+          ) {
+            score += 20;
+          }
+          return { candidate, actionType, score };
+        }
+        return null;
+      })
+      .filter(
+        (
+          item,
+        ): item is {
+          candidate: SafeControl;
+          actionType: GovernedBrowserAction;
+          score: number;
+        } => item !== null,
+      )
+      .sort((a, b) => b.score - a.score);
+
+    if (scored.length > 0 && scored[0]!.score >= 100) {
+      const chosen = scored[0]!.candidate;
+      const actionType = scored[0]!.actionType;
+      alreadyChosenNames.add(chosen.name.toLowerCase().trim());
       steps.push({
         actionType,
         controlName: chosen.name,
         controlRole: chosen.role,
-        purpose: `${isScroll ? "Scroll to" : "Click"} ${chosen.name} from the current page after your approval.`,
+        purpose: `${actionType === "SCROLL_TO_ELEMENT" ? "Scroll to" : "Click"} ${chosen.name} from the current page after your approval.`,
+        grounded: true,
       });
+    } else {
+      // Step targets a destination control not present on the current screen
+      const titleCased = rawTarget
+        .split(/\s+/)
+        .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+        .join(" ");
+
+      steps.push({
+        actionType: "CLICK_ELEMENT",
+        controlName: titleCased,
+        controlRole: "tile",
+        purpose: `Click ${titleCased} on the destination page after preceding navigation completes.`,
+        grounded: false,
+      });
+      alreadyChosenNames.add(titleCased.toLowerCase().trim());
     }
   }
 
@@ -697,6 +825,9 @@ function extractPlanStepsFromQuery(
           compoundSteps,
           `Multi-step plan to execute ${compoundSteps.length} actions requested by user`,
           "compound_query",
+          "deterministic-query-plan-proposer",
+          input.query,
+          compoundSteps[compoundSteps.length - 1]?.controlName,
         );
       }
 

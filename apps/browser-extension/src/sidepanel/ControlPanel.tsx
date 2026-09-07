@@ -259,19 +259,47 @@ export function ControlPanel({
       }
 
       // 4. Re-resolve target against the FRESH observation
-      const candidates = freshObs.controls.filter(
+      let candidates = freshObs.controls.filter(
         (c) =>
           c.name.localeCompare(step.controlName, undefined, {
             sensitivity: "accent",
           }) === 0 && isPotentiallyLowRiskAction(step.actionType, c),
       );
+
+      // Fallback matching for enterprise controls (e.g. Fiori tiles with suffix descriptions)
+      if (candidates.length === 0) {
+        const normTarget = step.controlName.toLowerCase().trim();
+        candidates = freshObs.controls
+          .filter((c) => {
+            if (!isPotentiallyLowRiskAction(step.actionType, c)) return false;
+            const normName = c.name.toLowerCase().trim();
+            return (
+              normName.startsWith(normTarget) ||
+              normTarget.startsWith(normName) ||
+              normName.includes(normTarget) ||
+              normTarget.includes(normName)
+            );
+          })
+          .sort((a, b) => {
+            const aName = a.name.toLowerCase().trim();
+            const bName = b.name.toLowerCase().trim();
+            const aStarts = aName.startsWith(normTarget) ? 1 : 0;
+            const bStarts = bName.startsWith(normTarget) ? 1 : 0;
+            if (aStarts !== bStarts) return bStarts - aStarts;
+            return (
+              Math.abs(aName.length - normTarget.length) -
+              Math.abs(bName.length - normTarget.length)
+            );
+          });
+      }
+
       const roleMatches = candidates.filter(
         (c) => c.role.toLowerCase() === step.controlRole.toLowerCase(),
       );
       const resolved =
         roleMatches.length === 1
           ? roleMatches[0]
-          : candidates.length === 1
+          : candidates.length > 0
             ? candidates[0]
             : null;
 
