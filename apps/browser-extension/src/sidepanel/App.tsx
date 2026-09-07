@@ -83,7 +83,7 @@ const legacyTabsEnabled = false;
 
 const WELCOME_MESSAGE: ConversationTurn = {
   sender: "system",
-  text: "👋 Hi there! RemoteAssist is here to help you out. Tell me what issue you are facing or what you need to achieve, and I will guide you through it.",
+  text: "Hi there! RemoteAssist is here to help you out. Tell me what issue you are facing or what you need to achieve, and I will guide you through it.",
 };
 
 async function extensionMessage<T>(
@@ -303,7 +303,7 @@ export function App() {
       const proposedStep = result.groundedGuidance?.proposedNextStep ?? "";
       const actionQuery =
         proposedStep &&
-        /\b(?:navigate|open|click|go|select|access|check|inspect|unlock|release|clear)\b/i.test(proposedStep)
+          /\b(?:navigate|open|click|go|select|access|check|inspect|unlock|release|clear)\b/i.test(proposedStep)
           ? `${newIssue}. ${proposedStep}`
           : newIssue;
       return await requestActionSuggestion(
@@ -335,9 +335,9 @@ export function App() {
       latestObservationFingerprint.current;
     const localProposal = currentObservation
       ? deterministicActionProposal(
-          query.trim() || issue.trim(),
-          currentObservation.controls,
-        )
+        query.trim() || issue.trim(),
+        currentObservation.controls,
+      )
       : null;
     try {
       const result = await suggestBrowserAction(
@@ -353,20 +353,20 @@ export function App() {
       const modelCandidates =
         modelProposal && currentObservation
           ? currentObservation.controls.filter(
-              (control) =>
-                (control.name.toLowerCase() ===
-                  modelProposal.controlName.toLowerCase() ||
-                  control.name
-                    .toLowerCase()
-                    .startsWith(modelProposal.controlName.toLowerCase()) ||
-                  control.name
-                    .toLowerCase()
-                    .includes(modelProposal.controlName.toLowerCase()) ||
-                  modelProposal.controlName
-                    .toLowerCase()
-                    .includes(control.name.toLowerCase())) &&
-                isPotentiallyLowRiskAction(modelProposal.actionType, control),
-            )
+            (control) =>
+              (control.name.toLowerCase() ===
+                modelProposal.controlName.toLowerCase() ||
+                control.name
+                  .toLowerCase()
+                  .startsWith(modelProposal.controlName.toLowerCase()) ||
+                control.name
+                  .toLowerCase()
+                  .includes(modelProposal.controlName.toLowerCase()) ||
+                modelProposal.controlName
+                  .toLowerCase()
+                  .includes(control.name.toLowerCase())) &&
+              isPotentiallyLowRiskAction(modelProposal.actionType, control),
+          )
           : [];
       const modelRoleMatches = modelCandidates.filter(
         (control) =>
@@ -380,7 +380,7 @@ export function App() {
         : localProposal;
       const matchesLatest =
         requestObservationFingerprint ===
-          latestObservationFingerprint.current ||
+        latestObservationFingerprint.current ||
         (proposal &&
           (observation?.controls.some(
             (c) =>
@@ -405,12 +405,12 @@ export function App() {
       // failure. The command still goes through the server policy engine.
       const matchesLatest =
         requestObservationFingerprint ===
-          latestObservationFingerprint.current ||
+        latestObservationFingerprint.current ||
         (localProposal &&
           (observation?.controls.some(
             (c) =>
               c.name.toLowerCase() ===
-                localProposal.controlName.toLowerCase() ||
+              localProposal.controlName.toLowerCase() ||
               c.name
                 .toLowerCase()
                 .includes(localProposal.controlName.toLowerCase()) ||
@@ -571,12 +571,12 @@ export function App() {
       setGuidance((current) =>
         current
           ? {
-              ...current,
-              groundedGuidance: {
-                ...current.groundedGuidance,
-                proposedNextStep: reason,
-              },
-            }
+            ...current,
+            groundedGuidance: {
+              ...current.groundedGuidance,
+              proposedNextStep: reason,
+            },
+          }
           : current,
       );
     } catch (caught) {
@@ -624,7 +624,7 @@ export function App() {
         !message.observation ||
         sender.tab?.id !== observedTabId.current ||
         message.observation.page_fingerprint ===
-          latestObservationFingerprint.current
+        latestObservationFingerprint.current
       ) {
         return false;
       }
@@ -695,9 +695,6 @@ export function App() {
       {!session && (
         <section className="card intro-card">
           <div className="welcome-banner">
-            <span className="welcome-banner-icon" aria-hidden="true">
-              👋
-            </span>
             <div className="welcome-banner-content">
               <strong>Hi there! RemoteAssist is here to help you out.</strong>
               <p>
